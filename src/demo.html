@@ -1,0 +1,1219 @@
+<title>Just4Me Education Demo</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700;12..96,800&family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400&display=swap">
+<style>
+/* Layout: a notebook-ruled product site; landing → tour → My Classroom app shell, one page, hash views */
+:root{
+  --paper:#fbfcf8; --paper-2:#f0f3ea; --line:#d9dfd0; --ink:#1c2b3a; --ink-soft:#4a5a68;
+  --sun:#f4b52c; --sun-ink:#5a3d00; --leaf:#2f7d5b; --leaf-soft:#dcefe4; --sky:#2c6fb7; --sky-soft:#e1ecf8;
+  --berry:#b8406a; --berry-soft:#f7e2ea; --card:#ffffff; --shadow:0 1px 2px rgba(28,43,58,.06),0 8px 24px rgba(28,43,58,.07);
+  --display:"Bricolage Grotesque", "Segoe UI", system-ui, sans-serif;
+  --body:"Atkinson Hyperlegible", "Segoe UI", system-ui, sans-serif;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --paper:#121a21; --paper-2:#18222b; --line:#2a3743; --ink:#e8eef2; --ink-soft:#a3b1bc;
+  --sun:#f6c04d; --sun-ink:#2a1d00; --leaf:#5cc495; --leaf-soft:#173527; --sky:#7cb2ec; --sky-soft:#172a3f;
+  --berry:#ec84a9; --berry-soft:#3a1a27; --card:#1b2630; --shadow:0 1px 2px rgba(0,0,0,.3),0 8px 24px rgba(0,0,0,.25); color-scheme:dark}}
+:root[data-theme="dark"]{
+  --paper:#121a21; --paper-2:#18222b; --line:#2a3743; --ink:#e8eef2; --ink-soft:#a3b1bc;
+  --sun:#f6c04d; --sun-ink:#2a1d00; --leaf:#5cc495; --leaf-soft:#173527; --sky:#7cb2ec; --sky-soft:#172a3f;
+  --berry:#ec84a9; --berry-soft:#3a1a27; --card:#1b2630; --shadow:0 1px 2px rgba(0,0,0,.3),0 8px 24px rgba(0,0,0,.25); color-scheme:dark}
+
+*{box-sizing:border-box}
+body{background:var(--paper);color:var(--ink);font-family:var(--body);font-size:16px;line-height:1.55}
+h1,h2,h3,h4{font-family:var(--display);line-height:1.12;margin:0;text-wrap:balance;letter-spacing:-.01em}
+p{margin:0}
+a{color:var(--sky)}
+button{font:inherit;cursor:pointer}
+:focus-visible{outline:3px solid var(--sky);outline-offset:2px;border-radius:6px}
+.wrap{max-width:1120px;margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+.eyebrow{font-size:.78rem;text-transform:uppercase;letter-spacing:.09em;font-weight:700;color:var(--ink-soft)}
+.btn{display:inline-flex;align-items:center;gap:.5rem;border:0;border-radius:999px;padding:.7rem 1.25rem;font-weight:700;text-decoration:none}
+.btn-primary{background:var(--ink);color:var(--paper)}
+.btn-sun{background:var(--sun);color:var(--sun-ink)}
+.btn-ghost{background:transparent;color:var(--ink);box-shadow:inset 0 0 0 2px var(--line)}
+.btn:hover{filter:brightness(1.07)}
+.chip{display:inline-flex;align-items:center;gap:.35rem;font-size:.8rem;font-weight:700;padding:.2rem .6rem;border-radius:999px}
+.chip-leaf{background:var(--leaf-soft);color:var(--leaf)} .chip-sky{background:var(--sky-soft);color:var(--sky)}
+.chip-berry{background:var(--berry-soft);color:var(--berry)} .chip-sun{background:var(--sun);color:var(--sun-ink)}
+.chip-plain{background:var(--paper-2);color:var(--ink-soft)}
+
+/* demo banner */
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:10;background:var(--ink)}
+.demo-bar{position:sticky;top:env(safe-area-inset-top,0px);z-index:9;background:var(--ink);color:var(--paper);font-size:.85rem}
+.demo-bar .wrap{display:flex;gap:.75rem;align-items:center;justify-content:space-between;padding-block:.45rem;flex-wrap:wrap}
+.demo-bar nav{display:flex;gap:.25rem;flex-wrap:wrap}
+.demo-bar button{background:transparent;color:var(--paper);border:0;padding:.25rem .6rem;border-radius:999px;opacity:.75}
+.demo-bar button[aria-current="true"]{background:var(--sun);color:var(--sun-ink);opacity:1;font-weight:700}
+
+/* site header */
+.site-head .wrap{display:flex;align-items:center;justify-content:space-between;padding-block:1rem;gap:1rem}
+.logo{display:flex;align-items:center;gap:.55rem;font-family:var(--display);font-weight:800;font-size:1.3rem;color:var(--ink);text-decoration:none;background:none;border:0;padding:0}
+.logo-mark{width:34px;height:34px;flex:none}
+.logo b{color:var(--leaf)}
+.head-actions{display:flex;gap:.5rem;align-items:center}
+
+/* hero */
+.hero{border-bottom:1px solid var(--line);background:
+  repeating-linear-gradient(to bottom,transparent 0 31px,var(--line) 31px 32px) ,var(--paper)}
+.hero .wrap{display:grid;grid-template-columns:1.05fr .95fr;gap:2.5rem;align-items:center;padding-block:3rem 3.5rem}
+.hero h1{font-size:clamp(2.3rem,5.2vw,3.9rem);font-weight:800}
+.hero h1 em{font-style:normal;background:linear-gradient(transparent 62%,var(--sun) 62% 92%,transparent 92%);padding:0 .1em}
+.hero-copy{display:flex;flex-direction:column;gap:1.25rem;min-width:0}
+.hero-copy > p{font-size:1.15rem;color:var(--ink-soft);max-width:34em}
+.hero-ctas{display:flex;gap:.6rem;flex-wrap:wrap}
+.margin-note{font-size:.85rem;color:var(--ink-soft);display:flex;gap:1rem;flex-wrap:wrap}
+.margin-note span::before{content:"✓ ";color:var(--leaf);font-weight:700}
+
+/* hero visual: one topic, three formats */
+.stack{position:relative;min-height:380px}
+.stack .tile{position:absolute;background:var(--card);border-radius:16px;box-shadow:var(--shadow);border:1px solid var(--line);padding:14px;width:min(320px,80%)}
+.tile-1{top:0;left:6%;transform:rotate(-3deg)}
+.tile-2{top:120px;right:0;transform:rotate(2.5deg)}
+.tile-3{bottom:0;left:0;transform:rotate(-1deg)}
+.tile h4{font-size:.95rem;margin-bottom:.4rem}
+.tile .meta{font-size:.75rem;color:var(--ink-soft)}
+.mini-comic{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-top:8px}
+.mini-comic div{aspect-ratio:1;border:2px solid var(--ink);border-radius:6px;background:var(--sky-soft);position:relative;overflow:hidden}
+.wave{display:flex;gap:3px;align-items:center;height:36px;margin-top:8px}
+.wave i{display:block;width:4px;border-radius:2px;background:var(--leaf)}
+.storyboard{display:flex;gap:6px;margin-top:8px}
+.storyboard div{flex:1;aspect-ratio:16/10;border-radius:6px;background:var(--sun);opacity:.85}
+.storyboard div:nth-child(2){opacity:.6}.storyboard div:nth-child(3){opacity:.4}
+
+section.band{padding-block:3.5rem}
+.band-alt{background:var(--paper-2);border-block:1px solid var(--line)}
+.section-head{display:flex;flex-direction:column;gap:.5rem;margin-bottom:2rem;max-width:44rem}
+.section-head h2{font-size:clamp(1.7rem,3.4vw,2.4rem);font-weight:800}
+.section-head p{color:var(--ink-soft);font-size:1.05rem}
+
+.services{display:grid;grid-template-columns:repeat(3,1fr);gap:1.25rem}
+.service{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:1.4rem;display:flex;flex-direction:column;gap:.7rem;min-width:0}
+.service svg{width:44px;height:44px}
+.service h3{font-size:1.3rem}
+.service p{color:var(--ink-soft)}
+.service .example{margin-top:auto;font-size:.88rem;border-top:1px dashed var(--line);padding-top:.7rem}
+
+/* pipeline */
+.pipeline{display:grid;grid-template-columns:repeat(5,1fr);gap:.75rem;counter-reset:step}
+.pipe{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:1rem;position:relative;min-width:0}
+.pipe::before{counter-increment:step;content:counter(step);position:absolute;top:-12px;left:14px;width:26px;height:26px;border-radius:50%;background:var(--ink);color:var(--paper);font-weight:700;font-size:.85rem;display:grid;place-items:center}
+.pipe h4{font-size:1.02rem;margin-top:.3rem}
+.pipe .bot{font-size:.78rem;font-weight:700;color:var(--leaf);letter-spacing:.04em}
+.pipe p{font-size:.88rem;color:var(--ink-soft);margin-top:.35rem}
+
+.trust{display:grid;grid-template-columns:repeat(4,1fr);gap:1rem}
+.trust div{border-left:3px solid var(--leaf);padding:.2rem 0 .2rem .9rem}
+.trust h4{font-size:1.02rem}
+.trust p{font-size:.9rem;color:var(--ink-soft)}
+
+.cta-band{background:var(--ink);color:var(--paper)}
+.cta-band .wrap{display:flex;justify-content:space-between;align-items:center;gap:1.5rem;flex-wrap:wrap;padding-block:2.5rem}
+.cta-band h2{font-size:clamp(1.5rem,3vw,2.1rem)}
+footer{padding-block:1.5rem;font-size:.85rem;color:var(--ink-soft)}
+
+/* tour */
+.tour-steps{display:grid;gap:1.25rem}
+.tour-step{display:grid;grid-template-columns:200px 1fr;gap:1.5rem;background:var(--card);border:1px solid var(--line);border-radius:16px;padding:1.4rem;align-items:start}
+.tour-step .num{font-family:var(--display);font-size:3rem;font-weight:800;color:var(--sun);line-height:1}
+.tour-step h3{font-size:1.35rem;margin-bottom:.4rem}
+.tour-step p{color:var(--ink-soft);max-width:60ch}
+
+/* login */
+.login-wrap{display:grid;place-items:center;padding-block:4rem}
+.login{background:var(--card);border:1px solid var(--line);border-radius:18px;box-shadow:var(--shadow);padding:2rem;width:min(420px,100%);display:flex;flex-direction:column;gap:1rem}
+.login label{display:flex;flex-direction:column;gap:.3rem;font-weight:700;font-size:.9rem}
+.login input{font:inherit;padding:.65rem .8rem;border-radius:10px;border:2px solid var(--line);background:var(--paper);color:var(--ink)}
+.login .hint{font-size:.85rem;color:var(--ink-soft)}
+
+/* classroom app */
+.app{display:grid;grid-template-columns:230px 1fr;gap:0;min-height:80vh;border-top:1px solid var(--line)}
+.side{background:var(--paper-2);border-right:1px solid var(--line);padding:1.2rem .8rem;display:flex;flex-direction:column;gap:.25rem}
+.side .eyebrow{padding:.3rem .6rem}
+.side button{display:flex;align-items:center;gap:.6rem;background:transparent;border:0;color:var(--ink);padding:.6rem .7rem;border-radius:10px;text-align:left;font-weight:700}
+.side button svg{width:18px;height:18px;flex:none}
+.side button[aria-current="true"]{background:var(--card);box-shadow:var(--shadow)}
+.side .badge{margin-left:auto;background:var(--berry);color:#fff;border-radius:999px;font-size:.72rem;padding:.05rem .45rem}
+.side .acct{margin-top:auto;font-size:.82rem;color:var(--ink-soft);padding:.6rem;border-top:1px solid var(--line)}
+.main{padding:1.5rem max(16px,env(safe-area-inset-right,0px)) 2.5rem 1.75rem;min-width:0;display:flex;flex-direction:column;gap:1.5rem}
+.main-head{display:flex;justify-content:space-between;align-items:flex-end;gap:1rem;flex-wrap:wrap}
+.main-head h2{font-size:1.9rem;font-weight:800}
+.main-head p{color:var(--ink-soft)}
+.card{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:1.25rem;min-width:0}
+.card h3{font-size:1.15rem;margin-bottom:.6rem}
+.grid-3{display:grid;grid-template-columns:repeat(3,1fr);gap:1rem}
+.grid-2{display:grid;grid-template-columns:repeat(2,1fr);gap:1rem}
+.kid{display:flex;flex-direction:column;gap:.75rem}
+.kid-top{display:flex;gap:.8rem;align-items:center}
+.avatar{width:48px;height:48px;border-radius:14px;display:grid;place-items:center;font-family:var(--display);font-weight:800;font-size:1.3rem;flex:none}
+.kid dl{display:grid;grid-template-columns:auto 1fr;gap:.25rem .8rem;margin:0;font-size:.9rem}
+.kid dt{color:var(--ink-soft)} .kid dd{margin:0;font-weight:700}
+.chips{display:flex;gap:.35rem;flex-wrap:wrap}
+.slots{font-size:.85rem;color:var(--ink-soft)}
+.kid-link{cursor:pointer;transition:border-color .15s,box-shadow .15s,transform .15s}
+.kid-link:hover{border-color:var(--ink-soft);box-shadow:var(--shadow);transform:translateY(-2px)}
+.back-link{background:none;border:0;padding:0;margin-top:.4rem;color:var(--sky);font-weight:700;font-size:.9rem}
+.kid-go{margin-top:auto;font-weight:700;font-size:.9rem;color:var(--sky)}
+@media (prefers-reduced-motion:reduce){.kid-link:hover{transform:none}}
+.add-kid{border:2px dashed var(--line);background:transparent;border-radius:16px;color:var(--ink-soft);font-weight:700;min-height:160px}
+
+.stat-row{display:grid;grid-template-columns:repeat(4,1fr);gap:1rem}
+.stat{padding:1rem 1.1rem}
+.stat .v{font-family:var(--display);font-size:1.9rem;font-weight:800;font-variant-numeric:tabular-nums}
+.stat .l{font-size:.85rem;color:var(--ink-soft)}
+
+table{border-collapse:collapse;width:100%;font-size:.92rem}
+th{text-align:left;font-size:.75rem;text-transform:uppercase;letter-spacing:.07em;color:var(--ink-soft);padding:.5rem .6rem;border-bottom:2px solid var(--line)}
+td{padding:.65rem .6rem;border-bottom:1px solid var(--line);vertical-align:top}
+td.num{font-variant-numeric:tabular-nums;text-align:right}
+.tscroll{overflow-x:auto}
+
+/* plan */
+.plan-days{display:grid;grid-template-columns:repeat(5,1fr);gap:.6rem}
+.day{border:1px solid var(--line);border-radius:12px;padding:.8rem;background:var(--paper);min-width:0}
+button.day{font:inherit;color:var(--ink);text-align:left;cursor:pointer;display:flex;flex-direction:column;align-items:flex-start;transition:border-color .15s,box-shadow .15s}
+button.day:hover{border-color:var(--ink-soft)}
+button.day[aria-pressed="true"]{border:2px solid var(--ink);background:var(--card);box-shadow:var(--shadow)}
+.detail{display:flex;flex-direction:column;gap:1rem;border-top:4px solid var(--sun)}
+.detail-head{display:flex;justify-content:space-between;align-items:flex-end;gap:1rem;flex-wrap:wrap}
+.detail-nav{display:flex;gap:.4rem}
+.detail-nav .btn{padding:.4rem .8rem;font-size:.88rem}
+.detail-nav .btn:disabled{opacity:.4;cursor:default}
+.std-box{background:var(--leaf-soft);border-radius:10px;padding:.6rem .8rem;font-size:.9rem;display:flex;gap:.6rem;align-items:baseline;flex-wrap:wrap}
+.std-box span:last-child{flex:1;min-width:14rem}
+.detail-grid{display:grid;grid-template-columns:1.2fr 1fr;gap:1.5rem}
+.detail-col{display:flex;flex-direction:column;gap:1.2rem;min-width:0}
+.detail h4{font-size:.8rem;text-transform:uppercase;letter-spacing:.08em;color:var(--ink-soft);margin-bottom:.5rem;font-family:var(--body);font-weight:700}
+.detail ul,.detail ol{margin:0;padding:0;list-style:none;display:flex;flex-direction:column;gap:.5rem;font-size:.93rem}
+.obj li{padding-left:1.6rem;position:relative}
+.obj li::before{content:"✓";position:absolute;left:0;top:0;width:1.15rem;height:1.15rem;border-radius:50%;background:var(--leaf);color:#fff;font-size:.7rem;display:grid;place-items:center;font-weight:700}
+.steps li{display:grid;grid-template-columns:4.2rem 1fr;gap:.6rem;padding-bottom:.5rem;border-bottom:1px dashed var(--line)}
+.steps .min{font-weight:700;font-variant-numeric:tabular-nums;color:var(--sky)}
+.notes{background:var(--paper-2);border-left:4px solid var(--sun);border-radius:0 10px 10px 0;padding:.8rem 1rem}
+.notes li{padding-left:1rem;position:relative}
+.notes li::before{content:"";position:absolute;left:0;top:.55em;width:6px;height:6px;border-radius:50%;background:var(--sun)}
+.plain li{padding-left:1rem;position:relative}
+.plain li::before{content:"–";position:absolute;left:0;color:var(--ink-soft)}
+.refs a{font-weight:700}
+.refs li::after{content:" ↗";color:var(--ink-soft);font-size:.8rem}
+@media (max-width:900px){.detail-grid{grid-template-columns:1fr}}
+.day b{display:block;font-family:var(--display);font-size:.95rem}
+.day p{font-size:.85rem;color:var(--ink-soft);margin-top:.3rem}
+.day .chip{margin-top:.5rem}
+.std{font-family:ui-monospace,Menlo,Consolas,monospace;font-size:.8rem}
+
+/* create flow */
+.form-row{display:grid;grid-template-columns:repeat(3,1fr);gap:1rem}
+.field{display:flex;flex-direction:column;gap:.35rem;font-weight:700;font-size:.9rem;min-width:0}
+.field select,.field input{font:inherit;font-weight:400;padding:.6rem .7rem;border-radius:10px;border:2px solid var(--line);background:var(--paper);color:var(--ink)}
+.formats{display:flex;gap:.5rem;flex-wrap:wrap}
+.formats label{display:flex;align-items:center;gap:.4rem;border:2px solid var(--line);border-radius:999px;padding:.4rem .9rem;font-weight:700;cursor:pointer}
+.formats input{accent-color:var(--leaf)}
+.formats label:has(input:checked){border-color:var(--leaf);background:var(--leaf-soft)}
+.formats .soon{opacity:.55;cursor:not-allowed}
+.run-log{display:flex;flex-direction:column;gap:.5rem}
+.log-step{display:grid;grid-template-columns:28px 120px 1fr;gap:.7rem;align-items:start;padding:.6rem .7rem;border-radius:10px;background:var(--paper);border:1px solid var(--line);opacity:.45;transition:opacity .3s}
+.log-step.on{opacity:1}
+.log-step .dot{width:22px;height:22px;border-radius:50%;border:2px solid var(--line);display:grid;place-items:center;font-size:.75rem;font-weight:700}
+.log-step.done .dot{background:var(--leaf);border-color:var(--leaf);color:#fff}
+.log-step.work .dot{border-color:var(--sun);border-top-color:transparent;animation:spin .8s linear infinite}
+.log-step .who{font-weight:700;font-size:.85rem;color:var(--leaf)}
+.log-step .what{font-size:.88rem}
+@keyframes spin{to{transform:rotate(360deg)}}
+@media (prefers-reduced-motion:reduce){.log-step.work .dot{animation:none}}
+
+.output{display:grid;grid-template-columns:1.3fr 1fr;gap:1rem}
+.comic{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+.panel{border:3px solid var(--ink);border-radius:8px;background:var(--sky-soft);aspect-ratio:3/4;position:relative;overflow:hidden;display:flex;flex-direction:column;justify-content:flex-end}
+.panel svg{position:absolute;inset:0;width:100%;height:100%}
+.bubble{position:relative;margin:8px;background:var(--card);color:var(--ink);border:2px solid var(--ink);border-radius:12px;padding:6px 8px;font-size:.78rem;line-height:1.3;font-weight:700}
+.panel .cap{position:absolute;top:0;left:0;right:0;background:var(--sun);color:var(--sun-ink);font-size:.72rem;font-weight:700;padding:3px 6px}
+.checks{display:flex;flex-direction:column;gap:.6rem;font-size:.9rem}
+.checks .item{border-left:3px solid var(--leaf);padding-left:.7rem}
+.checks .item.fix{border-color:var(--sun)}
+.checks .item small{display:block;color:var(--ink-soft)}
+.player{display:flex;gap:.8rem;align-items:center;background:var(--paper);border:1px solid var(--line);border-radius:12px;padding:.7rem}
+.player button{width:40px;height:40px;border-radius:50%;border:0;background:var(--leaf);color:#fff;flex:none;font-size:1rem}
+.transcript{font-size:.9rem;display:flex;flex-direction:column;gap:.4rem;margin-top:.8rem}
+.transcript b{color:var(--leaf)}
+.frames{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
+.frame{aspect-ratio:16/10;border-radius:8px;background:var(--sky-soft);position:relative;overflow:hidden;border:1px solid var(--line)}
+.frame svg{position:absolute;inset:0;width:100%;height:100%}
+.frame-cap{font-size:.78rem;color:var(--ink-soft);margin-top:.25rem}
+
+/* progress */
+.bars{display:flex;flex-direction:column;gap:.75rem}
+.bar-row{display:grid;grid-template-columns:150px 1fr 48px;gap:.8rem;align-items:center;font-size:.9rem}
+.bar-track{height:14px;border-radius:999px;background:var(--paper-2);display:flex;overflow:hidden;border:1px solid var(--line)}
+.bar-track span{display:block;height:100%}
+.legend{display:flex;gap:1rem;font-size:.82rem;color:var(--ink-soft);flex-wrap:wrap}
+.legend i{display:inline-block;width:10px;height:10px;border-radius:3px;margin-right:.35rem;vertical-align:-1px}
+.spark{width:100%;height:150px}
+
+.review{display:flex;flex-direction:column;gap:.8rem}
+.ritem{display:grid;grid-template-columns:auto 1fr auto;gap:1rem;align-items:start}
+.ritem .actions{display:flex;gap:.4rem;flex-wrap:wrap}
+.ritem .actions .btn{padding:.45rem .9rem;font-size:.88rem}
+.resolved{opacity:.5}
+
+.kid-switch{display:flex;gap:.4rem;flex-wrap:wrap}
+.kid-switch button{border:2px solid var(--line);background:var(--card);color:var(--ink);border-radius:999px;padding:.35rem .9rem;font-weight:700}
+.kid-switch button[aria-pressed="true"]{border-color:var(--ink);background:var(--ink);color:var(--paper)}
+
+.test-intro{display:grid;grid-template-columns:1.2fr 1fr;gap:1.25rem}
+.test-intro h4,.rh{font-size:.8rem;text-transform:uppercase;letter-spacing:.08em;color:var(--ink-soft);margin-bottom:.5rem;font-family:var(--body);font-weight:700}
+.tlist{margin:0;padding-left:1.1rem;display:flex;flex-direction:column;gap:.4rem;font-size:.93rem}
+.test-intro .notes ul{margin:0;padding:0;list-style:none;display:flex;flex-direction:column;gap:.45rem;font-size:.9rem}
+.tpart{display:flex;flex-direction:column;gap:1rem}
+.tpart-head{display:flex;gap:.9rem;align-items:flex-start}
+.tpart-head h3{margin-bottom:.2rem}
+.tnum{flex:none;width:34px;height:34px;border-radius:50%;background:var(--ink);color:var(--paper);display:grid;place-items:center;font-family:var(--display);font-weight:800}
+.wlists{display:grid;grid-template-columns:repeat(3,1fr);gap:1rem}
+.wlist{border:1px solid var(--line);border-radius:12px;padding:.8rem;background:var(--paper);min-width:0}
+.wlist-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:.6rem}
+.words{display:grid;grid-template-columns:1fr 1fr;gap:.4rem}
+.word{font-family:var(--body);font-size:1.15rem;letter-spacing:.04em;padding:.5rem;border-radius:8px;border:2px solid var(--line);background:var(--card);color:var(--ink)}
+.word[aria-pressed="true"]{border-color:var(--leaf);background:var(--leaf-soft);color:var(--leaf);font-weight:700}
+.word[aria-pressed="true"]::after{content:" ✓"}
+.passage-wrap{display:grid;grid-template-columns:1.6fr 1fr;gap:1.25rem}
+.passage{background:var(--paper);border:1px solid var(--line);border-radius:12px;padding:1.1rem 1.25rem;min-width:0}
+.passage p{font-size:1.2rem;line-height:1.9;letter-spacing:.03em;word-spacing:.12em;margin-top:.5rem;max-width:60ch}
+.fluency{display:flex;flex-direction:column;gap:.9rem}
+.timer{display:flex;align-items:center;gap:1rem;justify-content:space-between;background:var(--paper-2);border-radius:12px;padding:.7rem .9rem}
+.timer span{font-family:var(--display);font-size:2.2rem;font-weight:800;font-variant-numeric:tabular-nums}
+.qlist{margin:0;padding-left:1.3rem;display:flex;flex-direction:column;gap:1rem}
+.qlist fieldset{border:0;padding:0;margin:0}
+.qlist legend{font-weight:700;font-size:1.02rem;display:flex;gap:.5rem;align-items:center;flex-wrap:wrap;padding:0}
+.opts{display:grid;grid-template-columns:1fr 1fr;gap:.4rem;margin-top:.5rem}
+.opts label{display:flex;gap:.5rem;align-items:center;border:2px solid var(--line);border-radius:10px;padding:.5rem .7rem;cursor:pointer}
+.opts input{accent-color:var(--leaf)}
+.opts label:has(input:checked){border-color:var(--sky);background:var(--sky-soft)}
+.result{display:flex;flex-direction:column;gap:1.2rem;border-top:4px solid var(--leaf)}
+.result .stat .v{font-size:1.5rem}
+@media (max-width:900px){.test-intro,.passage-wrap{grid-template-columns:1fr}.wlists{grid-template-columns:1fr}}
+@media (max-width:560px){.opts{grid-template-columns:1fr}}
+
+/* ---------- Lesson generator: sidebar button, dialog, viewer ---------- */
+.side-gen{margin-top:.6rem;background:var(--sun)!important;color:var(--sun-ink)!important;box-shadow:var(--shadow)}
+.gen-dialog{border:0;padding:0;border-radius:20px;width:min(760px,calc(100vw - 24px));max-height:calc(100vh - 24px);background:var(--card);color:var(--ink);box-shadow:0 20px 60px rgba(0,0,0,.3)}
+.gen-dialog::backdrop{background:rgba(18,26,33,.55)}
+.gen-form{display:flex;flex-direction:column;gap:1.1rem;padding:1.4rem 1.5rem}
+.gen-head{display:flex;justify-content:space-between;gap:1rem;align-items:flex-start}
+.gen-head h2{font-size:1.6rem;font-weight:800;margin:.15rem 0 .25rem}
+.gen-x{background:var(--paper-2);border:0;border-radius:50%;width:36px;height:36px;font-size:1.3rem;color:var(--ink);flex:none}
+.gen-field{border:0;padding:0;margin:0;display:flex;flex-direction:column;gap:.6rem;min-width:0}
+.gen-field legend{font-family:var(--display);font-weight:700;font-size:1.05rem;padding:0;margin-bottom:.55rem}
+.gen-field .opt{font-family:var(--body);font-weight:400;font-size:.85rem;color:var(--ink-soft);margin-left:.3rem}
+.gen-kids{display:grid;grid-template-columns:repeat(3,1fr);gap:.6rem}
+.gen-kid{display:flex;gap:.6rem;align-items:center;border:2px solid var(--line);border-radius:14px;padding:.6rem;cursor:pointer;min-width:0}
+.gen-kid input{position:absolute;opacity:0;pointer-events:none}
+.gen-kid .avatar{width:38px;height:38px;font-size:1.05rem;border-radius:11px}
+.gen-kid small{display:block;color:var(--ink-soft);font-size:.78rem;line-height:1.3}
+.gen-kid:has(input:checked){border-color:var(--ink);background:var(--paper-2)}
+.gen-kid:has(input:focus-visible){outline:3px solid var(--sky);outline-offset:2px}
+.gen-subjects{display:grid;grid-template-columns:1fr 1fr;gap:.6rem}
+.gen-subject{border:2px solid var(--line);border-radius:12px;padding:.55rem .7rem;display:flex;flex-direction:column;gap:.45rem;min-width:0}
+.gen-subject.on{border-color:var(--leaf);background:var(--leaf-soft)}
+.gen-subject label{display:flex;gap:.5rem;align-items:center;font-weight:700;cursor:pointer}
+.gen-subject input[type=checkbox]{accent-color:var(--leaf);width:18px;height:18px}
+.gen-subject input[type=text],.gen-refadd input,.gen-refadd textarea,.gen-row input,.gen-row select{font:inherit;font-weight:400;padding:.5rem .65rem;border-radius:9px;border:2px solid var(--line);background:var(--paper);color:var(--ink);width:100%;min-width:0}
+.gen-seg{display:flex;flex-wrap:wrap;gap:.4rem}
+.gen-seg label{border:2px solid var(--line);border-radius:999px;padding:.4rem .9rem;font-weight:700;cursor:pointer}
+.gen-seg input{position:absolute;opacity:0;pointer-events:none}
+.gen-seg label:has(input:checked){background:var(--ink);border-color:var(--ink);color:var(--paper)}
+.gen-seg label:has(input:focus-visible){outline:3px solid var(--sky);outline-offset:2px}
+.gen-row{display:grid;grid-template-columns:1fr 1fr;gap:.8rem}
+.gen-tabs{display:flex;gap:.3rem;flex-wrap:wrap}
+.gen-tabs button{border:0;background:var(--paper-2);color:var(--ink);padding:.4rem .8rem;border-radius:8px;font-weight:700;font-size:.88rem}
+.gen-tabs button[aria-selected="true"]{background:var(--sky-soft);color:var(--sky)}
+.gen-refadd{display:flex;flex-direction:column;gap:.5rem;align-items:flex-start}
+.gen-refadd input,.gen-refadd textarea{width:100%}
+.gen-refs{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:.4rem}
+.gen-refs li{display:flex;gap:.6rem;align-items:center;border:1px solid var(--line);border-radius:10px;padding:.45rem .6rem;background:var(--paper)}
+.gen-ref-title{flex:1;min-width:0;font-weight:700;font-size:.9rem;overflow-wrap:anywhere}
+.gen-ref-title small{display:block;font-weight:400;color:var(--ink-soft)}
+.gen-ref-x{background:none;border:0;color:var(--berry);font-weight:700;font-size:.85rem}
+.gen-check{display:flex;gap:.5rem;align-items:flex-start;font-size:.9rem}
+.gen-check input{accent-color:var(--leaf);margin-top:.2rem}
+.gen-errors{background:var(--berry-soft);color:var(--ink);border-left:4px solid var(--berry);border-radius:0 10px 10px 0;padding:.7rem .9rem;font-size:.92rem}
+.gen-errors ul{margin:.3rem 0 0;padding-left:1.1rem}
+.gen-foot{display:flex;justify-content:space-between;align-items:center;gap:1rem;flex-wrap:wrap;border-top:1px solid var(--line);padding-top:1rem;position:sticky;bottom:0;background:var(--card)}
+.gen-actions{display:flex;gap:.5rem;flex-wrap:wrap}
+.gen-err{color:var(--berry);font-weight:700}
+.gen-log{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:.45rem;max-height:48vh;overflow:auto}
+.gen-step{display:grid;grid-template-columns:26px 92px 1fr;gap:.6rem;align-items:start;padding:.55rem .7rem;border-radius:10px;background:var(--paper);border:1px solid var(--line);font-size:.9rem}
+.gen-step .dot{width:22px;height:22px;border-radius:50%;border:2px solid var(--line);display:grid;place-items:center;font-size:.72rem;font-weight:700}
+.gen-step.working .dot{border-color:var(--sun);border-top-color:transparent;animation:spin .8s linear infinite}
+.gen-step.done .dot{background:var(--leaf);border-color:var(--leaf);color:#fff}
+.gen-step.warn .dot{background:var(--sun);border-color:var(--sun);color:var(--sun-ink)}
+.gen-step .who{font-weight:700;color:var(--leaf)}
+.gen-note{background:var(--sun);color:var(--sun-ink);border-radius:12px;padding:.9rem 1rem;line-height:1.5}
+.gen-note b{display:block;margin-bottom:.3rem}
+.gen-saved{display:flex;flex-direction:column;gap:.6rem}
+.gen-saved-head{display:flex;justify-content:space-between;align-items:center;gap:1rem;flex-wrap:wrap}
+.gen-saved-list{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:.4rem}
+.gen-saved-list li{display:flex;justify-content:space-between;gap:1rem;flex-wrap:wrap;border-top:1px dashed var(--line);padding-top:.4rem}
+.uv-link{background:none;border:0;padding:0;color:var(--sky);font-weight:700;text-align:left;font:inherit;font-weight:700;cursor:pointer}
+body.uv-open{overflow:hidden}
+.uv{position:fixed;inset:0;z-index:30;background:var(--paper);display:flex;flex-direction:column;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+.uv-top{display:flex;justify-content:space-between;align-items:center;gap:1rem;flex-wrap:wrap;padding:.9rem max(16px,env(safe-area-inset-right,0px)) .9rem max(16px,env(safe-area-inset-left,0px));border-bottom:1px solid var(--line);background:var(--card)}
+.uv-id{display:flex;gap:.8rem;align-items:center;min-width:0}
+.uv-id h2{font-size:1.45rem;font-weight:800}
+.uv-actions{display:flex;gap:.5rem;align-items:center;flex-wrap:wrap}
+.uv-units{display:flex;gap:.3rem;padding:.5rem max(16px,env(safe-area-inset-left,0px));border-bottom:1px solid var(--line);background:var(--paper-2);overflow-x:auto}
+.uv-units button{border:0;background:transparent;color:var(--ink);padding:.4rem .9rem;border-radius:999px;font-weight:700;white-space:nowrap}
+.uv-units button[aria-selected="true"]{background:var(--ink);color:var(--paper)}
+.uv-main{flex:1;min-height:0;display:grid;grid-template-columns:250px 1fr}
+.uv-nav{border-right:1px solid var(--line);background:var(--paper-2);padding:1rem .6rem;display:flex;flex-direction:column;gap:.2rem;overflow-y:auto}
+.uv-nav button{text-align:left;background:transparent;border:0;color:var(--ink);padding:.55rem .7rem;border-radius:9px;font-weight:700;font-size:.9rem}
+.uv-nav button[aria-current="true"]{background:var(--card);box-shadow:var(--shadow)}
+.uv-body{overflow-y:auto;padding:1.6rem max(16px,env(safe-area-inset-right,0px)) 3rem 2rem;min-width:0;display:flex;flex-direction:column;gap:.9rem;max-width:880px}
+.uv-body > *{flex-shrink:0}
+.uv-body h3{font-size:1.2rem;margin-top:.6rem}
+.uv-body h4{font-size:1rem;margin-top:.3rem}
+.uv-h{font-size:1.8rem;font-weight:800}
+.uv-kicker{font-size:.78rem;text-transform:uppercase;letter-spacing:.09em;font-weight:700;color:var(--leaf)}
+.uv-lede{font-size:1.08rem;color:var(--ink-soft);max-width:65ch}
+.uv-banner{background:var(--sun);color:var(--sun-ink);border-radius:10px;padding:.6rem .8rem;font-weight:700;font-size:.9rem}
+.uv-list{margin:0;padding-left:1.2rem;display:flex;flex-direction:column;gap:.35rem}
+.uv-table{font-size:.92rem}
+.uv-table td{vertical-align:top}
+.uv-kv th{width:150px;text-transform:none;letter-spacing:0;font-size:.9rem;color:var(--ink);border-bottom:1px solid var(--line);vertical-align:top}
+.nowrap{white-space:nowrap}
+.uv-box{background:var(--paper-2);border-left:4px solid var(--sun);border-radius:0 10px 10px 0;padding:.75rem 1rem}
+.uv-box p{margin-top:.25rem}
+.uv-safety{border-color:var(--berry)}
+.uv-key{border-color:var(--leaf)}
+.uv-adapt{border-color:var(--sky)}
+.uv-two{display:grid;grid-template-columns:1fr 1fr;gap:.8rem}
+.uv-reading,.uv-sheet{border:1px solid var(--line);border-radius:14px;padding:1.1rem 1.3rem;background:var(--card);display:flex;flex-direction:column;gap:.6rem}
+.uv-reading p{max-width:68ch;line-height:1.7}
+.uv-items,.uv-defs{margin:0;padding-left:0;list-style:none;display:flex;flex-direction:column;gap:.5rem}
+.uv-items li{border-bottom:1px dashed var(--line);padding-bottom:.5rem}
+.uv-quiz{margin:0;padding-left:1.6rem;display:flex;flex-direction:column;gap:.8rem}
+.uv-choices{list-style:none;padding-left:.4rem;margin:.3rem 0 0;display:grid;grid-template-columns:1fr 1fr;gap:.2rem .8rem;font-size:.92rem}
+.uv-answers{display:flex;flex-wrap:wrap;gap:.4rem}
+.uv-answers span{border:1px solid var(--line);border-radius:8px;padding:.25rem .55rem;font-variant-numeric:tabular-nums}
+.uv-pipeline{margin:0;padding-left:1.2rem;display:flex;flex-direction:column;gap:.45rem}
+@media (max-width:900px){
+  .uv-main{grid-template-columns:1fr;grid-template-rows:auto 1fr}
+  .uv-nav{flex-direction:row;overflow-x:auto;border-right:0;border-bottom:1px solid var(--line);padding:.5rem max(16px,env(safe-area-inset-left,0px))}
+  .uv-nav button{white-space:nowrap}
+  .uv-body{padding-left:max(16px,env(safe-area-inset-left,0px))}
+  .side-gen{margin-top:0}
+}
+@media (max-width:620px){
+  .uv-top{gap:.6rem}
+  .uv-id h2{font-size:1.2rem}
+  .uv-actions .btn{padding:.5rem .9rem;font-size:.9rem}
+  .gen-kids,.gen-subjects,.gen-row,.uv-two,.uv-choices{grid-template-columns:1fr}
+  .gen-form{padding:1.1rem 1rem}
+  .gen-step{grid-template-columns:26px 1fr}
+  .gen-step .what{grid-column:2}
+}
+.toast{position:fixed;bottom:calc(20px + env(safe-area-inset-bottom,0px));left:50%;transform:translateX(-50%);background:var(--ink);color:var(--paper);padding:.7rem 1.1rem;border-radius:999px;font-weight:700;font-size:.9rem;z-index:40;box-shadow:var(--shadow)}
+.gen-notice{flex-basis:100%;color:var(--berry);font-weight:700;font-size:.9rem}
+.gen-notice:empty{display:none}
+
+@media (max-width:900px){
+  .hero .wrap{grid-template-columns:1fr}
+  .services,.grid-3{grid-template-columns:1fr 1fr}
+  .pipeline{grid-template-columns:1fr 1fr}
+  .trust,.stat-row{grid-template-columns:1fr 1fr}
+  .app{grid-template-columns:1fr}
+  .side{flex-direction:row;overflow-x:auto;border-right:0;border-bottom:1px solid var(--line);padding:.6rem max(16px,env(safe-area-inset-left,0px))}
+  .side .eyebrow,.side .acct{display:none}
+  .side button{white-space:nowrap}
+  .main{padding-left:max(16px,env(safe-area-inset-left,0px))}
+  .output,.grid-2{grid-template-columns:1fr}
+  .plan-days{grid-template-columns:1fr 1fr}
+  .form-row{grid-template-columns:1fr}
+  .tour-step{grid-template-columns:1fr}
+}
+@media (max-width:560px){
+  .services,.grid-3,.pipeline,.trust{grid-template-columns:1fr}
+  .stack{min-height:420px}
+  .frames{grid-template-columns:1fr 1fr}
+  .bar-row{grid-template-columns:100px 1fr 40px}
+  .log-step{grid-template-columns:28px 1fr}
+  .log-step .what{grid-column:2}
+  .head-actions .btn-ghost{display:none}
+}
+</style>
+
+<div class="demo-bar">
+  <div class="wrap">
+    <span><b>Investor demo</b> · all children, results and content are sample data</span>
+    <nav aria-label="Demo views">
+      <button data-go="home">Landing page</button>
+      <button data-go="tour">Tour</button>
+      <button data-go="login">Member login</button>
+      <button data-go="classroom">My Classroom</button>
+    </nav>
+  </div>
+</div>
+
+<!-- ============ LANDING ============ -->
+<div id="view-home" data-view>
+  <header class="site-head"><div class="wrap">
+    <button class="logo" data-go="home" aria-label="Just4Me Education home">
+      <svg class="logo-mark" viewBox="0 0 34 34" aria-hidden="true"><rect x="2" y="4" width="30" height="26" rx="6" fill="var(--leaf)"/><path d="M9 12h16M9 17h16M9 22h10" stroke="var(--paper)" stroke-width="2.4" stroke-linecap="round"/><circle cx="26" cy="23" r="5" fill="var(--sun)"/></svg>
+      <span>Just4Me <b>Education</b></span>
+    </button>
+    <div class="head-actions">
+      <button class="btn btn-ghost" data-go="tour">Take the tour</button>
+      <button class="btn btn-primary" data-go="login">Log in</button>
+    </div>
+  </div></header>
+
+  <section class="hero"><div class="wrap">
+    <div class="hero-copy">
+      <span class="eyebrow">For homeschooling families</span>
+      <h1>Lessons made for <em>your</em> child, in minutes.</h1>
+      <p>Tell us your child's grade, reading level, attention span and interests. Just4Me Education builds lesson plans, animations, podcasts and comics around them, checks every fact, and maps it to your state's learning standards.</p>
+      <div class="hero-ctas">
+        <button class="btn btn-sun" data-go="tour">See how it works</button>
+        <button class="btn btn-ghost" data-go="login">Member login</button>
+      </div>
+      <div class="margin-note"><span>Fact-checked with sources</span><span>Mapped to state standards</span><span>Nicknames only, never real names</span></div>
+    </div>
+    <div class="stack" aria-label="One topic, three formats">
+      <div class="tile tile-1">
+        <span class="chip chip-sky">Web comic</span>
+        <h4 style="margin-top:.5rem">Dina the Dino Detective</h4>
+        <div class="meta">Grade 3 · fossils · for “Bean”</div>
+        <div class="mini-comic"><div></div><div></div><div></div></div>
+      </div>
+      <div class="tile tile-2">
+        <span class="chip chip-leaf">Podcast · 6 min</span>
+        <h4 style="margin-top:.5rem">What Fossils Tell Us</h4>
+        <div class="meta">Read at a 2nd-grade level · short episodes</div>
+        <div class="wave" id="heroWave"></div>
+      </div>
+      <div class="tile tile-3">
+        <span class="chip chip-sun">Animation · 90 sec</span>
+        <h4 style="margin-top:.5rem">How a Fossil Forms</h4>
+        <div class="meta">Captions on · dyslexia-friendly font</div>
+        <div class="storyboard"><div></div><div></div><div></div></div>
+      </div>
+    </div>
+  </div></section>
+
+  <section class="band"><div class="wrap">
+    <div class="section-head">
+      <span class="eyebrow">What you can make</span>
+      <h2>One topic. Your child's interests. Three ways to learn it.</h2>
+      <p>Pick a subject and a format. Every piece is written for one child's grade, reading level and attention span.</p>
+    </div>
+    <div class="services">
+      <article class="service">
+        <svg viewBox="0 0 44 44" aria-hidden="true"><rect x="4" y="8" width="36" height="24" rx="5" fill="var(--sun)"/><path d="M19 15v10l8-5z" fill="var(--sun-ink)"/><rect x="10" y="35" width="24" height="3" rx="1.5" fill="var(--ink-soft)"/></svg>
+        <h3>Short animations</h3>
+        <p>60 to 120 second explainers with captions, narrated at your child's reading level.</p>
+        <p class="example"><b>Example:</b> a soccer-loving 6th grader learns why the Moon has phases through a stadium-lights analogy.</p>
+      </article>
+      <article class="service">
+        <svg viewBox="0 0 44 44" aria-hidden="true"><rect x="15" y="4" width="14" height="22" rx="7" fill="var(--leaf)"/><path d="M9 21a13 13 0 0 0 26 0" fill="none" stroke="var(--leaf)" stroke-width="3" stroke-linecap="round"/><path d="M22 34v6" stroke="var(--leaf)" stroke-width="3" stroke-linecap="round"/></svg>
+        <h3>Podcasts</h3>
+        <p>Two friendly hosts talk through the topic. Episode length follows your child's attention span.</p>
+        <p class="example"><b>Example:</b> a horse-crazy 8th grader hears linear equations explained through feed costs at a stable.</p>
+      </article>
+      <article class="service">
+        <svg viewBox="0 0 44 44" aria-hidden="true"><rect x="4" y="6" width="16" height="16" rx="3" fill="none" stroke="var(--sky)" stroke-width="3"/><rect x="24" y="6" width="16" height="16" rx="3" fill="var(--sky)"/><rect x="4" y="26" width="36" height="12" rx="3" fill="none" stroke="var(--sky)" stroke-width="3"/></svg>
+        <h3>Web comics</h3>
+        <p>Short illustrated stories that star characters built on what your child loves.</p>
+        <p class="example"><b>Example:</b> a dinosaur fan in 3rd grade follows a dino detective reading clues in fossils.</p>
+      </article>
+    </div>
+  </div></section>
+
+  <section class="band band-alt"><div class="wrap">
+    <div class="section-head">
+      <span class="eyebrow">How every piece is made</span>
+      <h2>Five AI specialists check each other's work</h2>
+      <p>Nothing reaches your child until it has been planned, aligned, written, fact-checked and screened for age-appropriateness. Anything they can't agree on comes to you to decide.</p>
+    </div>
+    <div class="pipeline">
+      <div class="pipe"><span class="bot">LPBot</span><h4>Plans the lesson</h4><p>Builds the week around grade, pacing and interests.</p></div>
+      <div class="pipe"><span class="bot">CompBot</span><h4>Aligns to standards</h4><p>Maps each objective to your state's standards. Optional.</p></div>
+      <div class="pipe"><span class="bot">TeachBot</span><h4>Writes the content</h4><p>Creates the comic, podcast or animation script.</p></div>
+      <div class="pipe"><span class="bot">FactBot + SafetyBot</span><h4>Checks it</h4><p>Every correction cites a source. Up to two revision rounds.</p></div>
+      <div class="pipe"><span class="bot">PrincBot</span><h4>Signs off</h4><p>Safety first, then accuracy. Unresolved items go to you.</p></div>
+    </div>
+  </div></section>
+
+  <section class="band"><div class="wrap">
+    <div class="section-head">
+      <span class="eyebrow">Built for children's privacy</span>
+      <h2>Your child's information stays protected</h2>
+    </div>
+    <div class="trust">
+      <div><h4>Nicknames only</h4><p>We never ask for a child's real name, photo, birthday or location.</p></div>
+      <div><h4>Encrypted</h4><p>Learning needs are encrypted separately and visible only to your family.</p></div>
+      <div><h4>Never used for training</h4><p>Your child's profile and work are never used to train AI models.</p></div>
+      <div><h4>Yours to delete</h4><p>Export or permanently delete any child's data at any time.</p></div>
+    </div>
+  </div></section>
+
+  <section class="cta-band"><div class="wrap">
+    <h2>See a week of lessons built for one child.</h2>
+    <button class="btn btn-sun" data-go="tour">Take the 2-minute tour</button>
+  </div></section>
+  <footer><div class="wrap">© 2026 Just4Me Education · Demo build for investor review</div></footer>
+</div>
+
+<!-- ============ TOUR ============ -->
+<div id="view-tour" data-view hidden>
+  <section class="band"><div class="wrap">
+    <div class="section-head">
+      <span class="eyebrow">Product tour</span>
+      <h2>From a child's profile to a finished lesson</h2>
+      <p>Follow one family through My Classroom. Each step opens the live demo screen.</p>
+    </div>
+    <div class="tour-steps">
+      <div class="tour-step"><span class="num">1</span><div><h3>Add a Virtual Child</h3><p>A parent adds a nickname, grade, reading level, attention span, learning needs and interests. Up to 10 children and 3 adult users per subscription.</p><button class="btn btn-ghost" style="margin-top:.8rem" data-go="classroom" data-tab="children">Open Children</button></div></div>
+      <div class="tour-step"><span class="num">2</span><div><h3>Generate a lesson plan</h3><p>LPBot builds a week of lessons. CompBot tags each day with the matching state standard, for example NJSLS-S <span class="std">3-LS4-1</span> on fossils.</p><button class="btn btn-ghost" style="margin-top:.8rem" data-go="classroom" data-tab="plans">Open Lesson plans</button></div></div>
+      <div class="tour-step"><span class="num">3</span><div><h3>Create personalized content</h3><p>Choose a topic and format. Watch the agents plan, write, fact-check and screen it, then see exactly what was corrected and why.</p><button class="btn btn-ghost" style="margin-top:.8rem" data-go="classroom" data-tab="create">Open Create</button></div></div>
+      <div class="tour-step"><span class="num">4</span><div><h3>Track progress against standards</h3><p>Record graded work and level-setting tests, then see which standards are covered, in progress or not yet started.</p><button class="btn btn-ghost" style="margin-top:.8rem" data-go="classroom" data-tab="progress">Open Progress</button></div></div>
+      <div class="tour-step"><span class="num">5</span><div><h3>Parents have the final say</h3><p>When the agents can't settle something, it lands in the review queue with a plain explanation.</p><button class="btn btn-ghost" style="margin-top:.8rem" data-go="classroom" data-tab="review">Open Review queue</button></div></div>
+    </div>
+  </div></section>
+</div>
+
+<!-- ============ LOGIN ============ -->
+<div id="view-login" data-view hidden>
+  <div class="wrap login-wrap">
+    <form class="login" id="loginForm">
+      <button type="button" class="logo" data-go="home">
+        <svg class="logo-mark" viewBox="0 0 34 34" aria-hidden="true"><rect x="2" y="4" width="30" height="26" rx="6" fill="var(--leaf)"/><path d="M9 12h16M9 17h16M9 22h10" stroke="var(--paper)" stroke-width="2.4" stroke-linecap="round"/><circle cx="26" cy="23" r="5" fill="var(--sun)"/></svg>
+        <span>Just4Me <b>Education</b></span>
+      </button>
+      <h2 style="font-size:1.6rem">Welcome back</h2>
+      <label for="email">Email<input id="email" type="email" value="demo.family@example.com" autocomplete="off"></label>
+      <label for="pw">Password<input id="pw" type="password" value="demo-only" autocomplete="off"></label>
+      <button class="btn btn-primary" type="submit" style="justify-content:center">Go to My Classroom</button>
+      <p class="hint">Demo account. Any entry opens the sample Rivera family classroom.</p>
+    </form>
+  </div>
+</div>
+
+<!-- ============ CLASSROOM ============ -->
+<div id="view-classroom" data-view hidden>
+  <div class="app">
+    <aside class="side" aria-label="My Classroom">
+      <button class="logo" data-go="home" style="padding:.3rem .6rem .9rem;font-size:1.05rem">
+        <svg class="logo-mark" style="width:26px;height:26px" viewBox="0 0 34 34" aria-hidden="true"><rect x="2" y="4" width="30" height="26" rx="6" fill="var(--leaf)"/><path d="M9 12h16M9 17h16M9 22h10" stroke="var(--paper)" stroke-width="2.4" stroke-linecap="round"/><circle cx="26" cy="23" r="5" fill="var(--sun)"/></svg>
+        <span>My Classroom</span>
+      </button>
+      <span class="eyebrow">Classroom</span>
+      <button data-tab="overview"><svg viewBox="0 0 18 18" aria-hidden="true"><rect x="1" y="1" width="7" height="7" rx="2" fill="currentColor"/><rect x="10" y="1" width="7" height="7" rx="2" fill="currentColor" opacity=".5"/><rect x="1" y="10" width="7" height="7" rx="2" fill="currentColor" opacity=".5"/><rect x="10" y="10" width="7" height="7" rx="2" fill="currentColor"/></svg>Overview</button>
+      <button data-tab="children"><svg viewBox="0 0 18 18" aria-hidden="true"><circle cx="6" cy="6" r="3.2" fill="currentColor"/><circle cx="13" cy="7" r="2.6" fill="currentColor" opacity=".55"/><path d="M1 16c0-3 2.3-5 5-5s5 2 5 5" fill="currentColor"/></svg>Children</button>
+      <button data-tab="plans"><svg viewBox="0 0 18 18" aria-hidden="true"><rect x="2" y="2" width="14" height="14" rx="3" fill="none" stroke="currentColor" stroke-width="2"/><path d="M5 7h8M5 11h5" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>Lesson plans</button>
+      <button data-tab="create"><svg viewBox="0 0 18 18" aria-hidden="true"><path d="M9 1l2.2 5.3L17 7l-4.3 3.8L14 17l-5-3-5 3 1.3-6.2L1 7l5.8-.7z" fill="currentColor"/></svg>Create content</button>
+      <button data-tab="progress"><svg viewBox="0 0 18 18" aria-hidden="true"><path d="M2 15l4-5 3 3 6-8" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>Progress</button>
+      <button data-tab="review"><svg viewBox="0 0 18 18" aria-hidden="true"><circle cx="9" cy="9" r="7" fill="none" stroke="currentColor" stroke-width="2"/><path d="M9 5v5M9 12.5v.5" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/></svg>Review queue<span class="badge" id="reviewBadge">2</span></button>
+      <button class="side-gen" data-gen-open=""><svg viewBox="0 0 18 18" aria-hidden="true"><rect x="2" y="3" width="14" height="13" rx="3" fill="none" stroke="currentColor" stroke-width="2"/><path d="M2 7h14M6 1v4M12 1v4" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>Lesson generator</button>
+      <div class="acct"><b>Rivera family</b><br>2 of 3 users · 3 of 10 children<br>Standards: New Jersey (NJSLS)</div>
+    </aside>
+
+    <main class="main" id="tabHost"></main>
+  </div>
+</div>
+
+<div class="toast" id="toast" hidden></div>
+
+<script>
+/* ---------- Sample data (clearly fictional demo family) ---------- */
+const KIDS = [
+  {id:"bean", nick:"Bean", grade:"3", gradeLabel:"Grade 3", attention:"Short", reading:"2nd-grade level", needs:["Dyslexia"], interests:["Dinosaurs","Drawing","Legos"], color:"var(--sun)", ink:"var(--sun-ink)", user:"Ana (parent)"},
+  {id:"scout", nick:"Scout", grade:"6", gradeLabel:"Grade 6", attention:"Average", reading:"7th-grade level", needs:[], interests:["Space","Soccer","Minecraft"], color:"var(--sky-soft)", ink:"var(--sky)", user:"Ana (parent)"},
+  {id:"juniper", nick:"Juniper", grade:"8", gradeLabel:"Grade 8", attention:"Long", reading:"9th-grade level", needs:["ADHD"], interests:["Horses","Sketching","Mystery novels"], color:"var(--leaf-soft)", ink:"var(--leaf)", user:"Marco (co-parent)"}
+];
+
+const PROGRESS = {
+  bean:{subjects:[["Science",9,3,3],["Reading",11,4,5],["Math",8,5,7],["Social Studies",5,2,6]], scores:[62,68,71,70,77,81,84],
+    graded:[["Fossil clues worksheet","Science","Oct 21","9 / 10"],["Short-vowel word sort","Reading","Oct 20","14 / 18"],["Arrays and multiplication","Math","Oct 17","7 / 10"]]},
+  scout:{subjects:[["Science",12,4,4],["Math",14,3,5],["ELA",10,5,4],["Social Studies",7,4,6]], scores:[74,72,79,83,82,86,88],
+    graded:[["Moon phases model","Science","Oct 22","18 / 20"],["Ratios quiz","Math","Oct 19","16 / 20"],["Argument paragraph","ELA","Oct 16","B+"]]},
+  juniper:{subjects:[["Math",15,4,3],["Science",10,6,5],["ELA",13,3,4],["Social Studies",9,4,5]], scores:[80,78,85,84,88,87,91],
+    graded:[["Linear equations at the stable","Math","Oct 22","23 / 25"],["Chemical reactions lab write-up","Science","Oct 18","A-"],["Mystery story opening","ELA","Oct 15","A"]]}
+};
+
+const PLANS = {
+  bean:{title:"Fossils: clues from long ago", week:"Week of Oct 26", days:[
+    ["Mon","What is a fossil?","Look at photos of real fossils and sort them: bones, shells, footprints.","3-LS4-1"],
+    ["Tue","How fossils form","Watch the 90-second animation, then build a layered “rock” from clay.","3-LS4-1"],
+    ["Wed","Dino detective comic","Read the comic and circle every clue Dina uses.","RF.3.4"],
+    ["Thu","Fossils and old environments","A fish fossil on a mountain: what does it tell us?","3-LS4-1"],
+    ["Fri","Show what you know","Draw-and-label check (10 min). Results feed Progress.","3-LS4-1"]]},
+  scout:{title:"Why the Moon has phases", week:"Week of Oct 26", days:[
+    ["Mon","Sun, Earth, Moon","Model with a lamp and a soccer ball.","MS-ESS1-1"],
+    ["Tue","The phase cycle","Podcast episode, then a phase-matching game.","MS-ESS1-1"],
+    ["Wed","Eclipses","Animation: why eclipses don't happen every month.","MS-ESS1-1"],
+    ["Thu","Moon journal","Sketch tonight's Moon and predict next week's.","MS-ESS1-1"],
+    ["Fri","Quiz","12 questions, auto-graded.","MS-ESS1-1"]]},
+  juniper:{title:"Linear equations in real life", week:"Week of Oct 26", days:[
+    ["Mon","Slope as a rate","Feed cost per day for a stable of horses.","8.EE.B.5"],
+    ["Tue","Writing y = mx + b","Podcast: two stable hands argue about the cheapest hay plan.","8.EE.B.6"],
+    ["Wed","Graphing","Plot two hay suppliers and find where they cross.","8.EE.C.8"],
+    ["Thu","Mystery problem set","Solve clues to find who left the gate open.","8.EE.C.7"],
+    ["Fri","Unit check","Graded assignment, 25 points.","8.EE.C.7"]]}
+};
+
+const REVIEW = [
+  {id:"r1", kid:"scout", title:"Podcast: “Why the Moon Has Phases”", issue:"FactBot and TeachBot disagreed after 2 rounds about the line “the Moon is closer to the Sun during a new moon.” FactBot cites NASA: the Earth–Moon distance to the Sun barely changes, and phases come from viewing angle. PrincBot removed the line but flagged the episode so you can listen first.", kind:"Accuracy"},
+  {id:"r2", kid:"juniper", title:"Comic: “The Open Gate Mystery”", issue:"SafetyBot flagged one panel where a horse is injured. It's mild and fits Grade 8, but Juniper's profile has no content preferences set, so PrincBot is asking you.", kind:"Age-appropriateness"}
+];
+
+let state = {tab:"overview", kid:"bean", day:0, reviewDone:{}};
+
+/* ---------- Helpers ---------- */
+const $ = (s, r=document) => r.querySelector(s);
+const esc = s => String(s).replace(/[&<>"]/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+const kidById = id => KIDS.find(k => k.id === id);
+function toast(msg){ const t=$("#toast"); t.textContent=msg; t.hidden=false; clearTimeout(toast._t); toast._t=setTimeout(()=>t.hidden=true,2600); }
+function kidSwitch(){
+  return `<div class="kid-switch" role="group" aria-label="Choose a child">${KIDS.map(k=>`<button data-kid="${k.id}" aria-pressed="${k.id===state.kid}">${esc(k.nick)} · ${k.gradeLabel}</button>`).join("")}</div>`;
+}
+function avatar(k){ return `<span class="avatar" style="background:${k.color};color:${k.ink}">${esc(k.nick[0])}</span>`; }
+
+/* ---------- Views ---------- */
+const VIEWS = ["home","tour","login","classroom"];
+function show(view){
+  if(!VIEWS.includes(view)) view = "home";
+  document.querySelectorAll("[data-view]").forEach(v => v.hidden = v.id !== "view-"+view);
+  document.querySelectorAll(".demo-bar [data-go]").forEach(b => b.setAttribute("aria-current", b.dataset.go===view));
+  if(view==="classroom") renderTab();
+  window.scrollTo(0,0);
+}
+
+/* ---------- Classroom tabs ---------- */
+function renderTab(){
+  document.querySelectorAll(".side [data-tab]").forEach(b => b.setAttribute("aria-current", b.dataset.tab===(state.tab==="test"?"progress":state.tab)));
+  const open = REVIEW.filter(r => !state.reviewDone[r.id]).length;
+  const badge = $("#reviewBadge"); badge.textContent = open; badge.hidden = open===0;
+  const host = $("#tabHost");
+  host.innerHTML = ({overview, children, plans, create, progress, review, test})[state.tab]();
+  if(state.tab==="test") restoreTest();
+  if(state.tab==="progress") drawSpark();
+}
+
+function overview(){
+  const open = REVIEW.filter(r => !state.reviewDone[r.id]).length;
+  return `
+  <div class="main-head"><div><span class="eyebrow">Saturday, Oct 24</span><h2>Good afternoon, Ana</h2><p>Here's this week across your three learners.</p></div>
+  <div style="display:flex;gap:.5rem;flex-wrap:wrap"><button class="btn btn-ghost" data-tab="create">Create content</button><button class="btn btn-sun" data-gen-open="">Lesson generator</button></div></div>
+  <div class="stat-row">
+    <div class="card stat"><div class="v">14</div><div class="l">Lessons completed this week</div></div>
+    <div class="card stat"><div class="v">9</div><div class="l">Pieces of content created</div></div>
+    <div class="card stat"><div class="v">83%</div><div class="l">Average on graded work</div></div>
+    <div class="card stat"><div class="v">${open}</div><div class="l">Items waiting for your review</div></div>
+  </div>
+  <div class="grid-3">${KIDS.map(k=>{const p=PROGRESS[k.id];const last=p.scores[p.scores.length-1];return `
+    <div class="card kid">
+      <div class="kid-top">${avatar(k)}<div><h3 style="margin:0">${esc(k.nick)}</h3><span class="slots">${k.gradeLabel} · ${esc(PLANS[k.id].title)}</span></div></div>
+      <div class="chips"><span class="chip chip-leaf">Latest score ${last}%</span><span class="chip chip-plain">${p.graded.length} graded this week</span></div>
+      <button class="btn btn-ghost" data-tab="progress" data-kid="${k.id}" style="align-self:flex-start">View progress</button>
+    </div>`}).join("")}</div>`;
+}
+
+function children(){
+  return `
+  <div class="main-head"><div><span class="eyebrow">Virtual Children</span><h2>Children</h2><p>3 of 10 children · shared by 2 of 3 adult users</p></div></div>
+  <div class="grid-3">
+    ${KIDS.map(k=>`
+    <div class="card kid kid-link" role="button" tabindex="0" data-tab="progress" data-kid="${k.id}" aria-label="View ${esc(k.nick)}'s progress">
+      <div class="kid-top">${avatar(k)}<div><h3 style="margin:0">${esc(k.nick)}</h3><span class="slots">Added by ${esc(k.user)}</span></div></div>
+      <dl>
+        <dt>Grade</dt><dd>${k.grade}</dd>
+        <dt>Reading level</dt><dd>${esc(k.reading)}</dd>
+        <dt>Attention span</dt><dd>${k.attention}</dd>
+        <dt>Learning needs</dt><dd>${k.needs.length? k.needs.map(esc).join(", ") + ' <span title="Encrypted" aria-label="Encrypted">🔒</span>' : "None listed"}</dd>
+      </dl>
+      <div class="chips">${k.interests.map(i=>`<span class="chip chip-sky">${esc(i)}</span>`).join("")}</div>
+      <span class="kid-go">View progress →</span>
+    </div>`).join("")}
+    <button class="add-kid" id="addKid">+ Add a child<br><span style="font-weight:400;font-size:.85rem">7 spots left</span></button>
+  </div>
+  <p class="slots">Learning needs are encrypted and only shown to adults in this family. Children are identified by nickname only.</p>`;
+}
+
+function plans(){
+  const k = kidById(state.kid), p = PLANS[state.kid];
+  return `
+  <div class="main-head"><div><span class="eyebrow">Lesson plans · LPBot + CompBot</span><h2>${esc(p.title)}</h2><p>${esc(k.nick)} · ${k.gradeLabel} · ${p.week} · ${k.attention.toLowerCase()} attention span, so lessons run ${k.attention==="Short"?"15–20":k.attention==="Average"?"25–35":"40–50"} minutes</p></div>
+  <div style="display:flex;flex-direction:column;gap:.5rem;align-items:flex-end">${kidSwitch()}<button class="btn btn-sun" data-gen-open="${k.id}">Generate lessons for ${esc(k.nick)}</button></div></div>
+  ${window.J4M && window.J4M.generatorUi ? window.J4M.generatorUi.generatedUnitsCard(k.id) : ""}
+  <div class="card">
+    <p class="eyebrow" style="margin-bottom:.3rem">This week's plan</p>
+    <p class="slots" style="margin-bottom:.7rem">Select a day to open its full lesson plan.</p>
+    <div class="plan-days">${p.days.map((d,i)=>`
+      <button type="button" class="day" data-day="${i}" aria-pressed="${state.day===i}" aria-controls="dayDetail"><span class="eyebrow">${d[0]}</span><b>${esc(d[1])}</b><p>${esc(d[2])}</p><span class="chip chip-leaf std">${d[3]}</span></button>`).join("")}</div>
+  </div>
+  ${dayDetail(k, p)}
+  <div class="grid-2">
+    <div class="card"><h3>Standards alignment</h3><p class="slots">CompBot checked every objective against the New Jersey Student Learning Standards. All 5 days map to at least one standard; no gaps found.</p></div>
+    <div class="card"><h3>Personalized for ${esc(k.nick)}</h3><p class="slots">Examples use ${k.interests.slice(0,2).map(esc).join(" and ").toLowerCase()}. Reading passages are pitched at a ${esc(k.reading)}.${k.needs.includes("Dyslexia")?" Dyslexia-friendly font and audio support are on.":""}</p></div>
+  </div>`;
+}
+
+/* ---------- Detailed daily lesson plans ---------- */
+const STANDARD_TEXT = {
+  "3-LS4-1":"Analyze and interpret data from fossils to provide evidence of the organisms and the environments in which they lived long ago.",
+  "RF.3.4":"Read with sufficient accuracy and fluency to support comprehension.",
+  "MS-ESS1-1":"Develop and use a model of the Earth-sun-moon system to describe the cyclic patterns of lunar phases, eclipses of the sun and moon, and seasons.",
+  "8.EE.B.5":"Graph proportional relationships, interpreting the unit rate as the slope of the graph.",
+  "8.EE.B.6":"Use similar triangles to explain why the slope is the same between any two points on a line; derive y = mx and y = mx + b.",
+  "8.EE.C.8":"Analyze and solve pairs of simultaneous linear equations.",
+  "8.EE.C.7":"Solve linear equations in one variable."
+};
+const REF = {
+  amnh:["AMNH OLogy: Paleontology (kid-friendly activities)","https://www.amnh.org/explore/ology/paleontology"],
+  si:["Smithsonian: Hall of Fossils, Deep Time","https://naturalhistory.si.edu/exhibits/david-h-koch-hall-fossils-deep-time"],
+  usgs:["USGS: Fossils, Rocks, and Time","https://pubs.usgs.gov/gip/fossils/"],
+  rr:["Reading Rockets: Building reading fluency","https://www.readingrockets.org/topics/fluency"],
+  nasaMoon:["NASA: Moon Phases","https://moon.nasa.gov/moon-in-motion/moon-phases/"],
+  spMoon:["NASA Space Place: Moon phases","https://spaceplace.nasa.gov/moon-phases/en/"],
+  tad:["Time and Date: Moon phase calendar","https://www.timeanddate.com/moon/phases/"],
+  nasaEcl:["NASA Science: Eclipses","https://science.nasa.gov/eclipses/"],
+  desmos:["Desmos graphing calculator (free)","https://www.desmos.com/calculator"],
+  khan:["Khan Academy: 8th grade math","https://www.khanacademy.org/math/cc-eighth-grade-math"]
+};
+const DETAILS = {
+  bean:[
+    {mins:15, obj:["Explain that a fossil is the preserved remains or traces of a living thing from long ago.","Sort fossils into body fossils (bones, shells, teeth) and trace fossils (footprints, burrows)."],
+     steps:[[3,"Warm-up: press a Lego figure into play-dough. Ask: what can we tell from the print it left?"],[7,"Sort the 8 fossil photo cards into “body” and “trace” piles."],[5,"Bean draws a favorite fossil and labels it body or trace."]],
+     refs:["amnh","si"], notes:["Fossils aren't only dinosaurs. Shells, leaves and footprints count too, so praise any good example.","The play-dough print is a trace fossil. Point back to it during the sort."], check:"Bean points to one body fossil and one trace fossil and says why each belongs in its pile."},
+    {mins:18, obj:["Describe the four steps of fossil formation: buried, layered, hardened, exposed.","Build a model of sediment layers and identify the oldest layer."],
+     steps:[[2,"Recap Monday: what's a trace fossil?"],[2,"Watch the 90-second animation “How a Fossil Forms.”"],[10,"Build 3 clay layers in different colors with a shell pressed into the bottom layer."],[4,"Bean retells the steps in order using the 4 picture cards."]],
+     refs:["amnh","usgs"], notes:["Ask “Which layer is oldest?” The answer is the bottom one, because it was laid down first.","Fossils take millions of years to form. Avoid saying just “a long time” so the scale sticks."], check:"Bean puts the four picture cards in order and explains one step in their own words."},
+    {mins:16, obj:["Read a short comic with accuracy and expression (RF.3.4).","Identify the clues a character uses as evidence."],
+     steps:[[3,"Preview three words with picture support: fossil, sediment, ancient."],[8,"Read the comic together. You read the captions, Bean reads the speech bubbles."],[5,"Bean circles every clue Dina uses."]],
+     refs:["rr"], notes:["Try echo reading: read a bubble with expression, then Bean repeats it.","Turn on read-aloud for the captions if decoding is tiring Bean out."], check:"Bean names two clues Dina used and what each told her."},
+    {mins:16, obj:["Use fossil evidence to infer what an environment was like long ago (3-LS4-1).","Explain why a sea-animal fossil on a mountain means the land was once under water."],
+     steps:[[3,"Mystery photo: a fish fossil found high on a mountain. What could it mean?"],[8,"Match 6 fossil cards to environment cards: ocean, swamp, desert, forest."],[5,"Bean draws a “detective report” of one match."]],
+     refs:["usgs","si"], notes:["Use the word “evidence” often. It's the heart of the 3-LS4-1 standard.","If Bean asks how the sea got up a mountain, it's a great question: land slowly rises and moves over millions of years."], check:"Bean explains one fossil-to-environment match using the word “evidence.”"},
+    {mins:15, obj:["Show understanding of what fossils are, how they form, and what they tell us about the past."],
+     steps:[[10,"Draw-and-label check: draw a fossil forming in 3 steps, then circle where it would be found."],[5,"Talk-through: Bean explains the drawing to you."]],
+     refs:["amnh"], notes:["Read every question aloud and accept spoken answers. Spelling isn't graded.","Enter the score in Progress. It updates Bean's 3-LS4-1 status."], check:"Scored on a 10-point rubric included with the lesson."}
+  ],
+  scout:[
+    {mins:30, obj:["Model the positions of the Sun, Earth and Moon.","Explain that half of the Moon is always lit by the Sun."],
+     steps:[[5,"Warm-up: what shape was the Moon last time you saw it?"],[15,"Darken the room. A bare lamp is the Sun; Scout holds a soccer ball at arm's length and turns slowly in a circle."],[10,"Sketch what the ball looked like at four positions."]],
+     refs:["nasaMoon","spMoon"], notes:["Take the lampshade off so the light is direct.","Common misconception: phases are caused by Earth's shadow. They aren't. That's an eclipse, which is Wednesday's lesson."], check:"Scout explains why we sometimes see only a thin crescent."},
+    {mins:32, obj:["Put the eight Moon phases in order.","State that one full cycle takes about 29.5 days."],
+     steps:[[12,"Listen to the podcast “Why the Moon Has Phases.”"],[15,"Phase-matching game: match 8 cards to positions on the orbit diagram."],[5,"Recap: waxing means growing, waning means shrinking."]],
+     refs:["nasaMoon","tad"], notes:["Northern Hemisphere memory trick: “DOC.” A D-shape (lit on the right) is waxing, O is full, a C-shape is waning.","Check tonight's phase on the calendar link so Scout can connect it to Thursday's journal."], check:"Scout orders all 8 phase cards correctly and names each one."},
+    {mins:30, obj:["Explain the difference between a solar and a lunar eclipse.","Explain why eclipses don't happen every month."],
+     steps:[[2,"Watch the animation on eclipses."],[15,"Use the lamp and ball: line them up for a solar eclipse, then a lunar eclipse."],[13,"Diagram both, then tilt the Moon's orbit to show why most months miss."]],
+     refs:["nasaEcl","nasaMoon"], notes:["The Moon's orbit is tilted about 5 degrees, so the three bodies usually don't line up exactly.","Safety: never look at the Sun directly, even during a partial eclipse."], check:"Scout explains in two sentences why we don't get an eclipse every month."},
+    {mins:25, obj:["Observe and record the Moon's appearance.","Predict the next week's phases from the pattern."],
+     steps:[[10,"Evening: go outside and find the Moon. Note its shape and where it is in the sky."],[10,"Draw it in the Moon journal with the date and time."],[5,"Predict and sketch what it will look like in 7 days."]],
+     refs:["tad"], notes:["If it's cloudy, use the Moon phase calendar for tonight instead.","The Moon is often visible in the daytime too, so an afternoon sighting counts."], check:"Scout's prediction matches the calendar for one week later."},
+    {mins:30, obj:["Show understanding of lunar phases and eclipses (MS-ESS1-1)."],
+     steps:[[20,"Take the 12-question quiz. It's graded automatically."],[10,"Review any missed questions together with the lamp-and-ball model."]],
+     refs:["nasaMoon"], notes:["The score goes straight to Progress and updates the MS-ESS1-1 status.","If Scout misses phase questions, repeat Tuesday's matching game next week."], check:"Auto-graded, 12 points."}
+  ],
+  juniper:[
+    {mins:45, obj:["Interpret a unit rate as the slope of a graph (8.EE.B.5).","Graph a proportional relationship from a real situation."],
+     steps:[[5,"Hook: feeding 4 horses costs $36 a day. What does a week cost?"],[20,"Fill in a cost-versus-days table, then graph it by hand."],[15,"Compare two stables with different daily rates. Which line is steeper, and why?"],[5,"Reflection: what does the slope mean in dollars per day?"]],
+     refs:["khan","desmos"], notes:["Work in 10-minute chunks with a quick check-in between them.","Let Juniper sketch the graph freehand first. Accuracy can come on the second pass."], check:"Juniper explains that the slope of the graph is the daily feed cost."},
+    {mins:45, obj:["Write equations in the form y = mx + b from a situation (8.EE.B.6).","Explain what m and b mean in context."],
+     steps:[[15,"Listen to the podcast “The Hay Bale Showdown.”"],[20,"Write equations for three hay suppliers, each with a different price and delivery fee."],[10,"Juniper teaches you what m and b mean for each supplier."]],
+     refs:["khan"], notes:["Frame b as the one-time starting cost, such as a delivery fee, and m as the price per bale.","Teaching it back to you is the best check of understanding. Ask naive questions."], check:"Juniper writes y = 12x + 30 for Hollow Creek and explains both numbers."},
+    {mins:45, obj:["Graph two linear equations and find where they intersect (8.EE.C.8).","Explain what the intersection means in context."],
+     steps:[[10,"Graph y = 12x + 30 and y = 15x by hand."],[15,"Check the graphs in Desmos."],[15,"Interpret: before the lines cross, which supplier is cheaper? After?"],[5,"Write a one-sentence recommendation for the stable owner."]],
+     refs:["desmos","khan"], notes:["The lines cross at 10 bales, where both cost $150.","If Juniper gets restless, switch from hand graphing to Desmos sooner."], check:"Juniper states that the suppliers cost the same at 10 bales and explains which to choose for 20 bales."},
+    {mins:45, obj:["Solve multi-step linear equations, including variables on both sides (8.EE.C.7)."],
+     steps:[[5,"Read the mystery setup: someone left the stable gate open."],[35,"Solve six equation clues. Each answer rules out a suspect."],[5,"Name the culprit and check each answer by substitution."]],
+     refs:["khan"], notes:["Let Juniper choose the order of the clues. Choice helps focus.","Keep scratch paper handy and encourage checking each answer by plugging it back in."], check:"Juniper solves at least 5 of 6 clues correctly and names the right suspect."},
+    {mins:50, obj:["Show mastery of the linear equations unit."],
+     steps:[[40,"Graded unit check, 25 points."],[10,"Go over any errors together."]],
+     refs:["khan"], notes:["Breaks are fine. The timer pauses so stopping doesn't cost points.","The score updates Progress for all four 8.EE standards from this week."], check:"Graded, 25 points."}
+  ]
+};
+
+function dayDetail(k, p){
+  if(state.day==null) return "";
+  const d = p.days[state.day], x = DETAILS[k.id][state.day];
+  const acc = [];
+  if(k.attention==="Short") acc.push("Short attention span: keep each part under 10 minutes and offer a movement break between parts.");
+  if(k.attention==="Long") acc.push("Long attention span: offer the optional extension problem if the lesson finishes early.");
+  if(k.needs.includes("Dyslexia")) acc.push("Dyslexia: dyslexia-friendly font and read-aloud are on for all printed materials. Don't grade spelling.");
+  if(k.needs.includes("ADHD")) acc.push("ADHD: tasks are split into short chunks with check-ins. A fidget or standing desk is fine.");
+  acc.push(`Interests: examples use ${k.interests[0].toLowerCase()} to keep ${esc(k.nick)} engaged.`);
+  return `
+  <article class="card detail" id="dayDetail" aria-live="polite">
+    <div class="detail-head">
+      <div><span class="eyebrow">${d[0]} · ${p.week} · ${x.mins} minutes</span><h3 style="font-size:1.5rem;margin:.2rem 0 0">${esc(d[1])}</h3></div>
+      <div class="detail-nav">
+        <button type="button" class="btn btn-ghost" data-day="${state.day-1}" ${state.day===0?"disabled":""} aria-label="Previous day">← Prev</button>
+        <button type="button" class="btn btn-ghost" data-day="${state.day+1}" ${state.day===p.days.length-1?"disabled":""} aria-label="Next day">Next →</button>
+      </div>
+    </div>
+    <div class="std-box"><span class="chip chip-leaf std">${d[3]}</span> <span>${esc(STANDARD_TEXT[d[3]]||"")}</span></div>
+    <div class="detail-grid">
+      <div class="detail-col">
+        <section><h4>Learning objectives</h4><ul class="obj">${x.obj.map(o=>`<li>${esc(o)}</li>`).join("")}</ul></section>
+        <section><h4>Lesson steps</h4><ol class="steps">${x.steps.map(s=>`<li><span class="min">${s[0]} min</span><span>${esc(s[1])}</span></li>`).join("")}</ol></section>
+        <section><h4>Check for understanding</h4><p>${esc(x.check)}</p></section>
+      </div>
+      <div class="detail-col">
+        <section class="notes"><h4>Notes for you</h4><ul>${x.notes.map(n=>`<li>${esc(n)}</li>`).join("")}</ul></section>
+        <section><h4>Adapted for ${esc(k.nick)}</h4><ul class="plain">${acc.map(a=>`<li>${a}</li>`).join("")}</ul></section>
+        <section><h4>References</h4><ul class="refs">${x.refs.map(r=>`<li><a href="${REF[r][1]}" target="_blank" rel="noopener">${esc(REF[r][0])}</a></li>`).join("")}</ul></section>
+      </div>
+    </div>
+  </article>`;
+}
+
+function create(){
+  const k = kidById(state.kid);
+  const topics = {bean:"How fossils form", scout:"Why the Moon has phases", juniper:"Linear equations at the stable"};
+  return `
+  <div class="main-head"><div><span class="eyebrow">Create content · TeachBot pipeline</span><h2>Create for ${esc(k.nick)}</h2><p>Pick a topic and a format. The agents do the rest.</p></div>${kidSwitch()}</div>
+  <form class="card" id="createForm" style="display:flex;flex-direction:column;gap:1rem">
+    <div class="form-row">
+      <label class="field" for="topic">Topic<input id="topic" value="${esc(topics[k.id])}"></label>
+      <label class="field" for="subject">Subject<select id="subject"><option>${k.id==="juniper"?"Math":"Science"}</option><option>Reading</option><option>Social Studies</option></select></label>
+      <label class="field" for="length">Length<select id="length"><option>Fits attention span (${k.attention})</option><option>Shorter</option><option>Longer</option></select></label>
+    </div>
+    <div class="field">Format
+      <div class="formats" role="radiogroup">
+        <label><input type="radio" name="fmt" value="comic" checked> Web comic</label>
+        <label><input type="radio" name="fmt" value="podcast"> Podcast</label>
+        <label><input type="radio" name="fmt" value="animation"> Animation</label>
+      </div>
+    </div>
+    <label style="display:flex;gap:.5rem;align-items:center;font-size:.9rem"><input type="checkbox" id="comp" checked style="accent-color:var(--leaf)"> Check against New Jersey standards (CompBot)</label>
+    <button class="btn btn-primary" type="submit" style="align-self:flex-start" id="genBtn">Generate</button>
+  </form>
+  <div id="runArea"></div>`;
+}
+
+const STEPS = [
+  ["LPBot","Reads ${nick}'s profile and today's lesson goal."],
+  ["CompBot","Maps the objective to ${std}."],
+  ["TeachBot","Writes a draft ${fmt} at a ${reading}."],
+  ["FactBot","Checks 11 claims against cited sources. 1 correction sent back."],
+  ["SafetyBot","Screens for age-appropriateness for ${grade}. No issues."],
+  ["TeachBot","Revision 1 of 2: applies the correction."],
+  ["PrincBot","Final check passed. Ready to assign."]
+];
+
+function runPipeline(fmt, useComp){
+  const k = kidById(state.kid);
+  const std = PLANS[k.id].days[1][3];
+  const fmtName = {comic:"web comic", podcast:"podcast episode", animation:"animation script"}[fmt];
+  const steps = STEPS.filter(s => useComp || s[0]!=="CompBot");
+  const fill = t => t.replace("${nick}",k.nick).replace("${std}",std).replace("${fmt}",fmtName).replace("${reading}",k.reading).replace("${grade}",k.gradeLabel);
+  const area = $("#runArea");
+  area.innerHTML = `<div class="card"><h3>Working on it</h3><div class="run-log">${steps.map((s,i)=>`
+    <div class="log-step" id="ls${i}"><span class="dot">${i+1}</span><span class="who">${s[0]}</span><span class="what">${esc(fill(s[1]))}</span></div>`).join("")}</div></div><div id="outArea"></div>`;
+  $("#genBtn").disabled = true;
+  const reduce = matchMedia("(prefers-reduced-motion: reduce)").matches;
+  const delay = reduce ? 120 : 650;
+  let i = 0;
+  (function next(){
+    if(i>0){ const prev=$("#ls"+(i-1)); if(!prev) return; prev.classList.remove("work"); prev.classList.add("done"); prev.querySelector(".dot").textContent="✓"; }
+    if(i>=steps.length){ showOutput(fmt, k, std); const b=$("#genBtn"); if(b) b.disabled=false; return; }
+    const el=$("#ls"+i); if(!el) return; el.classList.add("on","work"); el.querySelector(".dot").textContent="";
+    i++; setTimeout(next, delay);
+  })();
+}
+
+const OUTPUTS = {
+  bean:{
+    comic:{title:"Dina the Dino Detective: The Stone Shell", panels:[
+      ["Long, long ago…","A sea snail dies. Mud covers it up!"],
+      ["Millions of years","More mud piles on. It slowly turns to rock."],
+      ["Today","Dina finds the shape in the rock. A fossil! This was a sea!"]]},
+    podcast:{title:"What Fossils Tell Us", lines:[["Pip","Bean, did you know rocks can keep secrets?"],["Rae","Fossils are clues. They show us animals from long, long ago."],["Pip","Like a T. rex tooth! Or a tiny shell."]]},
+    animation:{title:"How a Fossil Forms", frames:["An animal dies near water","Mud and sand bury it","Layers press down and harden","Rain wears the rock away. We find it!"]},
+    fact:["Draft said dinosaurs and early people lived at the same time.","Fixed: non-avian dinosaurs died out about 66 million years ago, long before people.","Source: Smithsonian National Museum of Natural History"]
+  },
+  scout:{
+    comic:{title:"Halftime Under the Lights", panels:[["Kickoff","The stadium lights are the Sun. The ball is the Moon."],["Halftime","Walk around the ball. See how the lit part changes?"],["Final whistle","Same ball, same light. Only your view moved. That's a phase!"]]},
+    podcast:{title:"Why the Moon Has Phases", lines:[["Nova","Half the Moon is always lit by the Sun."],["Theo","So why don't we always see a full Moon?"],["Nova","Because we see different amounts of that lit half as the Moon orbits us, about every 29.5 days."]]},
+    animation:{title:"Moon Phases from Midfield", frames:["Sun lights half the Moon","New moon: lit side faces away","First quarter: half lit","Full moon: lit side faces us"]},
+    fact:["Draft said the Moon orbits Earth every 24 hours.","Fixed: the full cycle of phases takes about 29.5 days.","Source: NASA Science, Moon Phases"]
+  },
+  juniper:{
+    comic:{title:"The Open Gate Mystery", panels:[["Clue 1","Hay costs $12 a bale. Hollow Creek charges a $30 delivery fee."],["Clue 2","Ridgeback charges $15 a bale, free delivery."],["Solved","12x + 30 = 15x → x = 10 bales. After that, Hollow Creek is cheaper."]]},
+    podcast:{title:"The Hay Bale Showdown", lines:[["Sam","Supplier A: $12 a bale plus $30 delivery. That's y = 12x + 30."],["Lee","Supplier B is $15 a bale, no fee: y = 15x."],["Sam","Set them equal and they cross at 10 bales."]]},
+    animation:{title:"Where Two Lines Cross", frames:["Two suppliers, two prices","Write each as y = mx + b","Graph both lines","They cross at 10 bales"]},
+    fact:["Draft solved 12x + 30 = 15x as x = 12.","Fixed: 30 = 3x, so x = 10 bales.","Check: verified by substitution (150 = 150)"]
+  }
+};
+
+function showOutput(fmt, k, std){
+  const o = OUTPUTS[k.id], item = o[fmt];
+  let body = "";
+  if(fmt==="comic"){
+    const scenes = [sceneA, sceneB, sceneC];
+    body = `<div class="comic">${item.panels.map((p,i)=>`<div class="panel">${scenes[i](k.id)}<span class="cap">${esc(p[0])}</span><div class="bubble">${esc(p[1])}</div></div>`).join("")}</div>`;
+  } else if(fmt==="podcast"){
+    body = `<div class="player"><button type="button" id="playBtn" aria-label="Play sample">▶</button><div style="flex:1;min-width:0"><b>${esc(item.title)}</b><div class="wave" id="podWave"></div></div><span class="slots">${k.attention==="Short"?"6":k.attention==="Average"?"11":"18"} min</span></div>
+      <div class="transcript">${item.lines.map(l=>`<p><b>${esc(l[0])}:</b> ${esc(l[1])}</p>`).join("")}</div>`;
+  } else {
+    body = `<div class="frames">${item.frames.map((f,i)=>`<div><div class="frame">${frameArt(i)}</div><div class="frame-cap">${i+1}. ${esc(f)}</div></div>`).join("")}</div>`;
+  }
+  $("#outArea").innerHTML = `
+  <div class="output" style="margin-top:1rem">
+    <div class="card"><div style="display:flex;justify-content:space-between;gap:.6rem;flex-wrap:wrap;align-items:center;margin-bottom:.8rem"><h3 style="margin:0">${esc(item.title)}</h3><span class="chip chip-leaf std">${std}</span></div>${body}
+      <div style="display:flex;gap:.5rem;margin-top:1rem;flex-wrap:wrap"><button class="btn btn-primary" type="button" id="assignBtn">Assign to ${esc(k.nick)}</button><button class="btn btn-ghost" type="button" id="regenBtn">Try another version</button></div></div>
+    <div class="card"><h3>What the agents checked</h3><div class="checks">
+      <div class="item fix"><b>FactBot correction</b>${esc(o.fact[0])}<br>${esc(o.fact[1])}<small>${esc(o.fact[2])}</small></div>
+      <div class="item"><b>SafetyBot</b>Appropriate for ${k.gradeLabel}. No flagged content.</div>
+      <div class="item"><b>Personalization</b>Built around ${esc(k.interests[0].toLowerCase())}, at a ${esc(k.reading)}${k.needs.includes("Dyslexia")?", with dyslexia-friendly font and read-aloud":""}${k.needs.includes("ADHD")?", broken into short chunks with check-ins":""}.</div>
+      <div class="item"><b>PrincBot</b>Resolved in 1 of 2 allowed revision rounds.</div>
+    </div></div>
+  </div>`;
+  if(fmt==="podcast"){ buildWave($("#podWave"), 48); }
+}
+
+/* simple illustrated scenes, drawn from tokens so both themes read */
+function sceneA(id){ return id==="bean"
+  ? `<svg viewBox="0 0 120 160" aria-hidden="true"><rect y="100" width="120" height="60" fill="var(--sky)" opacity=".35"/><path d="M48 112c10-14 30-12 30 2s-18 12-22 4" fill="var(--sun)" stroke="var(--ink)" stroke-width="2.5"/><circle cx="30" cy="40" r="10" fill="var(--sun)"/></svg>`
+  : id==="scout" ? `<svg viewBox="0 0 120 160" aria-hidden="true"><rect x="8" y="20" width="6" height="60" fill="var(--ink-soft)"/><circle cx="11" cy="18" r="9" fill="var(--sun)"/><rect y="110" width="120" height="50" fill="var(--leaf)" opacity=".45"/><circle cx="78" cy="96" r="14" fill="var(--card)" stroke="var(--ink)" stroke-width="2.5"/></svg>`
+  : `<svg viewBox="0 0 120 160" aria-hidden="true"><rect y="104" width="120" height="56" fill="var(--leaf)" opacity=".4"/><rect x="62" y="70" width="34" height="36" fill="var(--sun)" stroke="var(--ink)" stroke-width="2.5"/><path d="M62 82h34M62 94h34" stroke="var(--ink)" stroke-width="2"/></svg>`; }
+function sceneB(id){ return id==="bean"
+  ? `<svg viewBox="0 0 120 160" aria-hidden="true"><rect y="60" width="120" height="25" fill="var(--sun)" opacity=".45"/><rect y="85" width="120" height="25" fill="var(--sky)" opacity=".35"/><rect y="110" width="120" height="50" fill="var(--ink-soft)" opacity=".35"/><path d="M50 126c8-10 22-9 22 2s-13 9-16 3" fill="none" stroke="var(--ink)" stroke-width="2.5"/></svg>`
+  : id==="scout" ? `<svg viewBox="0 0 120 160" aria-hidden="true"><circle cx="60" cy="70" r="22" fill="var(--card)" stroke="var(--ink)" stroke-width="2.5"/><path d="M60 48a22 22 0 0 1 0 44z" fill="var(--sun)"/><path d="M20 120a40 18 0 0 0 80 0" fill="none" stroke="var(--ink-soft)" stroke-dasharray="4 4" stroke-width="2"/></svg>`
+  : `<svg viewBox="0 0 120 160" aria-hidden="true"><rect y="104" width="120" height="56" fill="var(--leaf)" opacity=".4"/><rect x="24" y="74" width="30" height="32" fill="var(--berry)" opacity=".7" stroke="var(--ink)" stroke-width="2.5"/><rect x="66" y="74" width="30" height="32" fill="var(--sky)" opacity=".6" stroke="var(--ink)" stroke-width="2.5"/></svg>`; }
+function sceneC(id){ return id==="bean"
+  ? `<svg viewBox="0 0 120 160" aria-hidden="true"><rect y="96" width="120" height="64" fill="var(--ink-soft)" opacity=".3"/><circle cx="40" cy="62" r="13" fill="var(--leaf)" stroke="var(--ink)" stroke-width="2.5"/><circle cx="36" cy="59" r="2" fill="var(--ink)"/><path d="M52 64l14-6" stroke="var(--ink)" stroke-width="2.5"/><circle cx="74" cy="56" r="9" fill="none" stroke="var(--ink)" stroke-width="2.5"/></svg>`
+  : id==="scout" ? `<svg viewBox="0 0 120 160" aria-hidden="true"><circle cx="30" cy="60" r="12" fill="var(--card)" stroke="var(--ink)" stroke-width="2"/><path d="M30 48a12 12 0 0 1 0 24z" fill="var(--sun)"/><circle cx="62" cy="60" r="12" fill="var(--sun)" stroke="var(--ink)" stroke-width="2"/><circle cx="94" cy="60" r="12" fill="var(--card)" stroke="var(--ink)" stroke-width="2"/><path d="M94 48a12 12 0 0 0 0 24z" fill="var(--sun)"/></svg>`
+  : `<svg viewBox="0 0 120 160" aria-hidden="true"><path d="M12 120L108 40" stroke="var(--berry)" stroke-width="3"/><path d="M12 100L108 50" stroke="var(--sky)" stroke-width="3"/><circle cx="72" cy="69" r="6" fill="var(--sun)" stroke="var(--ink)" stroke-width="2"/></svg>`; }
+function frameArt(i){
+  const fills=["var(--sun)","var(--leaf)","var(--sky)","var(--berry)"];
+  return `<svg viewBox="0 0 160 100" aria-hidden="true"><rect y="${70-i*8}" width="160" height="${30+i*8}" fill="${fills[i]}" opacity=".35"/><circle cx="${40+i*25}" cy="${45}" r="${10+i*2}" fill="${fills[i]}"/></svg>`;
+}
+
+function buildWave(el, n){
+  if(!el) return; let h=""; for(let i=0;i<n;i++){ const v=8+Math.round(Math.abs(Math.sin(i*1.7)+Math.sin(i*.6))*12); h+=`<i style="height:${v}px"></i>`; } el.innerHTML=h;
+}
+
+function progress(){
+  const k = kidById(state.kid), p = PROGRESS[state.kid];
+  const tot = p.subjects.reduce((a,s)=>[a[0]+s[1],a[1]+s[2],a[2]+s[3]],[0,0,0]);
+  const all = tot[0]+tot[1]+tot[2];
+  return `
+  <div class="main-head"><div><span class="eyebrow">Progress · New Jersey Student Learning Standards</span><h2>${esc(k.nick)}'s progress</h2><p>${k.gradeLabel} · ${esc(k.reading)} · ${k.attention} attention span · ${Math.round(tot[0]/all*100)}% of this year's standards covered so far</p><button type="button" class="back-link" data-tab="children">← All children</button></div>${kidSwitch()}</div>
+  <div class="grid-2">
+    <div class="card"><h3>Standards by subject</h3>
+      <div class="legend" style="margin-bottom:.8rem"><span><i style="background:var(--leaf)"></i>Covered</span><span><i style="background:var(--sun)"></i>In progress</span><span><i style="background:var(--line)"></i>Not yet started</span></div>
+      <div class="bars">${p.subjects.map(s=>{const t=s[1]+s[2]+s[3];return `
+        <div class="bar-row"><span>${esc(s[0])}</span><div class="bar-track" role="img" aria-label="${esc(s[0])}: ${s[1]} covered, ${s[2]} in progress, ${s[3]} not started"><span style="width:${s[1]/t*100}%;background:var(--leaf)"></span><span style="width:${s[2]/t*100}%;background:var(--sun)"></span></div><span class="num" style="font-variant-numeric:tabular-nums;text-align:right">${s[1]}/${t}</span></div>`}).join("")}</div>
+    </div>
+    <div class="card"><h3>Graded work average, last 7 weeks</h3><svg class="spark" id="spark" viewBox="0 0 400 150" role="img" aria-label="Scores ${p.scores.join(", ")} percent"></svg></div>
+  </div>
+  <div class="card"><div style="display:flex;justify-content:space-between;align-items:center;gap:1rem;flex-wrap:wrap;margin-bottom:.6rem"><h3 style="margin:0">Recent graded assignments</h3><button class="btn btn-ghost" type="button" id="levelBtn">${state.kid==="bean"?"Open reading level-setting test":"Assign a level-setting test"}</button></div>
+    <div class="tscroll"><table><thead><tr><th>Assignment</th><th>Subject</th><th>Date</th><th style="text-align:right">Score</th></tr></thead>
+    <tbody>${p.graded.map(g=>`<tr><td>${esc(g[0])}</td><td>${esc(g[1])}</td><td>${esc(g[2])}</td><td class="num">${esc(g[3])}</td></tr>`).join("")}</tbody></table></div>
+  </div>`;
+}
+
+function drawSpark(){
+  const svg=$("#spark"); if(!svg) return;
+  const d=PROGRESS[state.kid].scores, W=400,H=150,pl=34,pr=14,pt=14,pb=26, lo=50, hi=100;
+  const x=i=>pl+i*(W-pl-pr)/(d.length-1), y=v=>pt+(hi-v)*(H-pt-pb)/(hi-lo);
+  let g=""; [50,75,100].forEach(v=>{g+=`<line x1="${pl}" x2="${W-pr}" y1="${y(v)}" y2="${y(v)}" stroke="var(--line)"/><text x="${pl-6}" y="${y(v)+4}" text-anchor="end" font-size="11" fill="var(--ink-soft)">${v}%</text>`;});
+  const pts=d.map((v,i)=>`${x(i)},${y(v)}`).join(" ");
+  const area=`M${x(0)},${y(lo)} L${pts.split(" ").join(" L")} L${x(d.length-1)},${y(lo)} Z`;
+  d.forEach((v,i)=>{g+=`<text x="${x(i)}" y="${H-8}" text-anchor="middle" font-size="11" fill="var(--ink-soft)">W${i+1}</text>`;});
+  g+=`<path d="${area}" fill="var(--leaf)" opacity=".14"/><polyline points="${pts}" fill="none" stroke="var(--leaf)" stroke-width="3" stroke-linejoin="round" stroke-linecap="round"/>`;
+  const L=d.length-1; g+=`<circle cx="${x(L)}" cy="${y(d[L])}" r="5" fill="var(--leaf)" stroke="var(--card)" stroke-width="2"/><text x="${x(L)-8}" y="${y(d[L])-10}" text-anchor="end" font-size="12" font-weight="700" fill="var(--ink)">${d[L]}%</text>`;
+  svg.innerHTML=g;
+}
+
+/* ---------- Reading level-setting test (example for Bean) ---------- */
+const WORD_LISTS = [
+  {level:"Grade 1", words:["fish","jump","stop","sand","bone","shell","rock","dig","mud","nest"]},
+  {level:"Grade 2", words:["track","crawl","before","sharp","giant","under","dried","hunter","cliff","river"]},
+  {level:"Grade 3", words:["ancient","skeleton","discover","scientist","enormous","preserve","buried","creature","evidence","million"]}
+];
+const PASSAGE = "Mia and her dad went to the beach after a big storm. The waves had pushed new rocks onto the sand. Mia saw a gray stone with a strange shape on it. It looked like a curly shell, but it was as hard as rock. “Dad, look!” she called. Her dad held the stone up to the light. “This is a fossil,” he said. “A sea snail made this shape a very long time ago.” Mia ran her finger over the swirls. She wondered what else was hiding under the sand. She put the fossil in her pocket and kept looking.";
+const PASSAGE_WORDS = PASSAGE.split(/\s+/).length;
+const QUESTIONS = [
+  {skill:"Recall a detail", q:"Where did Mia find the stone?", a:["At the beach","In the forest","In her backyard","At a museum"], c:0},
+  {skill:"Recall a detail", q:"When did Mia and her dad go to the beach?", a:["Early in the morning","After a big storm","On her birthday","At night"], c:1},
+  {skill:"Recall a detail", q:"What made the shape in the stone?", a:["A fish","A crab","A sea snail","A dinosaur"], c:2},
+  {skill:"Word meaning", q:"The stone had a “strange” shape. What does strange mean?", a:["Heavy","Wet","Tiny","Unusual"], c:3},
+  {skill:"Make an inference", q:"Why do you think Mia kept looking?", a:["She was cold","She hoped to find more fossils","Her dad told her to","She lost her shoe"], c:1},
+  {skill:"Main idea", q:"What is the story mostly about?", a:["Mia finding a fossil at the beach","A big storm","How snails move","Mia's dad's job"], c:0}
+];
+const T = {words:{}, read:"", errors:"", answers:{}, secs:60, running:false, timer:null, scored:false};
+
+function test(){
+  const k = kidById("bean");
+  return `
+  <div class="main-head"><div><span class="eyebrow">Level-setting test · Reading · Example</span><h2>Bean's reading check</h2><p>Grade 3 · profile reading level: 2nd grade · about 20 minutes · you give it, Bean answers</p><button type="button" class="back-link" data-tab="progress" data-kid="bean">← Back to progress</button></div>
+  <div style="display:flex;gap:.5rem;flex-wrap:wrap"><button class="btn btn-ghost" type="button" id="sampleBtn">Fill in sample answers</button><button class="btn btn-primary" type="button" id="scoreBtn">See results</button></div></div>
+
+  <div class="card test-intro">
+    <div><h3>Before you start</h3>
+      <ul class="tlist"><li>Three short parts: word reading, a timed read-aloud, and story questions.</li><li>Bean reads Parts 1 and 2. In Part 3 you may read the questions and answer choices aloud.</li><li>Stop any part early if Bean is frustrated. The result still counts.</li></ul></div>
+    <div class="notes"><h4>Adapted for Bean</h4><ul><li>Dyslexia: dyslexia-friendly font and extra spacing are on. Count self-corrections as correct.</li><li>Short attention span: take a 1-minute movement break between parts.</li><li>Only Part 2 is timed. Everything else has no time limit.</li></ul></div>
+  </div>
+
+  <section class="card tpart">
+    <div class="tpart-head"><span class="tnum">1</span><div><h3>Word reading</h3><p class="slots">Bean reads each word aloud. Tap a word when Bean reads it correctly. Move up a list only if Bean gets 8 or more right on the one before.</p></div></div>
+    <div class="wlists">${WORD_LISTS.map((L,li)=>`
+      <div class="wlist"><div class="wlist-head"><b>${L.level} list</b><span class="chip chip-plain" id="wc${li}">0 / 10</span></div>
+        <div class="words">${L.words.map((w,wi)=>`<button type="button" class="word" data-word="${li}-${wi}" aria-pressed="false">${w}</button>`).join("")}</div></div>`).join("")}</div>
+  </section>
+
+  <section class="card tpart">
+    <div class="tpart-head"><span class="tnum">2</span><div><h3>Timed read-aloud</h3><p class="slots">Start the timer and have Bean read the story aloud for one minute. When it stops, enter how far Bean got and how many words were missed.</p></div></div>
+    <div class="passage-wrap">
+      <div class="passage"><span class="eyebrow">Mia's Big Find · ${PASSAGE_WORDS} words · Grade 2 level</span><p>${esc(PASSAGE)}</p></div>
+      <div class="fluency">
+        <div class="timer"><span id="timerVal" aria-live="polite">1:00</span><button type="button" class="btn btn-sun" id="timerBtn">Start timer</button></div>
+        <label class="field" for="wordsRead">Words read in 1 minute<input id="wordsRead" type="number" min="0" max="${PASSAGE_WORDS}" inputmode="numeric"></label>
+        <label class="field" for="wordErrors">Words missed<input id="wordErrors" type="number" min="0" inputmode="numeric"></label>
+        <p class="slots">Skipped words and words you had to supply count as missed. Self-corrections don't.</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="card tpart">
+    <div class="tpart-head"><span class="tnum">3</span><div><h3>Story questions</h3><p class="slots">About the story in Part 2. Bean may look back at it. Read the questions aloud if that helps.</p></div></div>
+    <ol class="qlist">${QUESTIONS.map((q,qi)=>`
+      <li><fieldset><legend><span class="chip chip-sky">${q.skill}</span> ${esc(q.q)}</legend>
+        <div class="opts">${q.a.map((a,ai)=>`<label><input type="radio" name="q${qi}" value="${ai}" id="q${qi}a${ai}"> ${esc(a)}</label>`).join("")}</div></fieldset></li>`).join("")}</ol>
+  </section>
+
+  <div id="testResult"></div>`;
+}
+
+function restoreTest(){
+  Object.entries(T.words).forEach(([id,on])=>{ const b=document.querySelector(`[data-word="${id}"]`); if(b) b.setAttribute("aria-pressed", on); });
+  updateWordCounts();
+  const r=$("#wordsRead"), e=$("#wordErrors");
+  if(r){ r.value=T.read; r.addEventListener("input",()=>T.read=r.value); }
+  if(e){ e.value=T.errors; e.addEventListener("input",()=>T.errors=e.value); }
+  Object.entries(T.answers).forEach(([q,a])=>{ const el=$(`#q${q}a${a}`); if(el) el.checked=true; });
+  document.querySelectorAll(".qlist input").forEach(i=>i.addEventListener("change",()=>{ T.answers[i.name.slice(1)]=i.value; }));
+  showTimer();
+  if(T.scored) scoreTest(true);
+}
+function updateWordCounts(){
+  WORD_LISTS.forEach((L,li)=>{ const n=L.words.filter((_,wi)=>T.words[`${li}-${wi}`]).length; const c=$("#wc"+li); if(c){ c.textContent=`${n} / 10`; c.className="chip "+(n>=8?"chip-leaf":n>0?"chip-sun":"chip-plain"); } });
+}
+function showTimer(){ const t=$("#timerVal"), b=$("#timerBtn"); if(!t) return; t.textContent=`0:${String(T.secs).padStart(2,"0")}`.replace("0:60","1:00"); if(b) b.textContent=T.running?"Pause":T.secs===0?"Reset timer":T.secs<60?"Resume":"Start timer"; }
+function toggleTimer(){
+  if(T.secs===0){ T.secs=60; showTimer(); return; }
+  T.running=!T.running;
+  if(T.running){ T.timer=setInterval(()=>{ T.secs--; if(T.secs<=0){ T.secs=0; T.running=false; clearInterval(T.timer); toast("Time! Mark where Bean stopped."); } showTimer(); },1000); }
+  else clearInterval(T.timer);
+  showTimer();
+}
+function fillSample(){
+  const correct={0:[0,1,2,3,4,5,6,7,8,9],1:[0,1,2,3,5,6,8,9],2:[1,6,9]};
+  T.words={}; Object.entries(correct).forEach(([li,arr])=>arr.forEach(wi=>T.words[`${li}-${wi}`]=true));
+  T.read="68"; T.errors="5"; T.answers={0:"0",1:"1",2:"2",3:"0",4:"1",5:"0"};
+  renderTab(); toast("Sample answers filled in");
+}
+function resetTest(){ clearInterval(T.timer); Object.assign(T,{words:{},read:"",errors:"",answers:{},secs:60,running:false,scored:false}); renderTab(); window.scrollTo(0,0); }
+
+function scoreTest(silent){
+  const counts = WORD_LISTS.map((L,li)=>L.words.filter((_,wi)=>T.words[`${li}-${wi}`]).length);
+  let decode = "Below Grade 1"; counts.forEach((n,i)=>{ if(n>=8 && (i===0||counts[i-1]>=8)) decode = WORD_LISTS[i].level; });
+  const read = parseInt(T.read,10), err = parseInt(T.errors,10);
+  const hasFluency = !isNaN(read);
+  const wcpm = hasFluency ? Math.max(0, read-(isNaN(err)?0:err)) : null;
+  const acc = hasFluency && read>0 ? Math.round((read-(isNaN(err)?0:err))/read*100) : null;
+  const answered = Object.keys(T.answers).length;
+  const right = QUESTIONS.filter((q,qi)=>T.answers[qi]!==undefined && Number(T.answers[qi])===q.c).length;
+  if(!silent && answered===0 && counts.every(n=>n===0) && !hasFluency){ toast("Mark some answers first, or fill in the sample answers"); return; }
+  T.scored = true;
+  /* Fall benchmarks, 50th percentile words correct per minute (Hasbrouck & Tindal, 2017): Grade 2 = 50, Grade 3 = 83 */
+  let flu = "Not given";
+  if(wcpm!==null) flu = wcpm>=83 ? "Grade 3" : wcpm>=50 ? "Grade 2" : "Grade 1";
+  const comp = Math.round(right/QUESTIONS.length*100);
+  const levels = [decode, flu].filter(l=>l.startsWith("Grade")).map(l=>Number(l.slice(-1)));
+  const overall = levels.length ? Math.min(...levels) : null;
+  const placement = overall ? `Grade ${overall}${comp>=83?", upper":comp>=50?", middle":", lower"}` : "Not enough answers yet";
+  const missed = QUESTIONS.filter((q,qi)=>Number(T.answers[qi])!==q.c).map(q=>q.skill);
+  const recs = [];
+  if(decode!=="Grade 3") recs.push("Daily 10-minute phonics practice on multisyllable words (an-cient, skel-e-ton), using the Grade 3 words Bean missed.");
+  if(wcpm!==null && wcpm<83) recs.push("Repeated reading: Bean reads the same short passage 3 times across the week to build speed and confidence.");
+  if(missed.includes("Word meaning")) recs.push("Add a vocabulary warm-up to each lesson: 3 new words with pictures, drawn from Bean's dinosaur content.");
+  if(missed.includes("Make an inference")) recs.push("Practice “why do you think…” questions during read-alouds.");
+  if(!recs.length) recs.push("Bean is reading at grade level. Move reading materials up to a Grade 3 level.");
+  $("#testResult").innerHTML = `
+  <div class="card result">
+    <div class="result-top"><div><span class="eyebrow">Result</span><h3 style="font-size:1.6rem;margin:.2rem 0">Estimated reading level: ${placement}</h3><p class="slots">Based on the lowest of the word-reading and fluency levels, adjusted by comprehension. TeachBot will pitch new reading material at this level.</p></div></div>
+    <div class="stat-row">
+      <div class="stat card"><div class="v">${decode}</div><div class="l">Word reading (${counts.join(" / ")} of 10)</div></div>
+      <div class="stat card"><div class="v">${wcpm!==null?wcpm:"–"}</div><div class="l">Words correct per minute${acc!==null?` · ${acc}% accuracy`:""}</div></div>
+      <div class="stat card"><div class="v">${flu}</div><div class="l">Fluency level (Grade 3 fall average: 83)</div></div>
+      <div class="stat card"><div class="v">${right} / ${QUESTIONS.length}</div><div class="l">Story questions (${comp}%)</div></div>
+    </div>
+    <div class="grid-2">
+      <section><h4 class="rh">Recommended next steps</h4><ul class="tlist">${recs.map(r=>`<li>${esc(r)}</li>`).join("")}</ul></section>
+      <section><h4 class="rh">Good to know</h4><ul class="tlist"><li>This is a quick placement check, not a diagnosis.</li><li>Fluency benchmarks: Hasbrouck & Tindal (2017) oral reading fluency norms.</li><li>Retest in about 8 weeks to measure growth.</li></ul></section>
+    </div>
+    <div style="display:flex;gap:.5rem;flex-wrap:wrap"><button class="btn btn-primary" type="button" id="saveTestBtn">Save to Bean's progress</button><button class="btn btn-ghost" type="button" id="resetTestBtn">Start over</button></div>
+  </div>`;
+  if(!silent) $("#testResult").scrollIntoView({behavior: matchMedia("(prefers-reduced-motion: reduce)").matches?"auto":"smooth", block:"start"});
+}
+
+function review(){
+  return `
+  <div class="main-head"><div><span class="eyebrow">Parent review · PrincBot escalations</span><h2>Review queue</h2><p>When the agents can't settle something under the rules, you decide.</p></div></div>
+  <div class="review">${REVIEW.map(r=>{const k=kidById(r.kid);const done=state.reviewDone[r.id];return `
+    <div class="card ritem ${done?"resolved":""}">${avatar(k)}
+      <div><div class="chips" style="margin-bottom:.4rem"><span class="chip ${r.kind==="Accuracy"?"chip-sky":"chip-berry"}">${r.kind}</span><span class="chip chip-plain">For ${esc(k.nick)}</span></div>
+        <h3 style="margin-bottom:.3rem">${esc(r.title)}</h3><p class="slots">${esc(r.issue)}</p></div>
+      <div class="actions">${done?`<span class="chip chip-leaf">${esc(done)}</span>`:`<button class="btn btn-primary" data-approve="${r.id}">Approve</button><button class="btn btn-ghost" data-revise="${r.id}">Ask for a revision</button>`}</div>
+    </div>`}).join("")}</div>`;
+}
+
+/* ---------- Events ---------- */
+document.addEventListener("click", e => {
+  const go = e.target.closest("[data-go]");
+  if(go){ e.preventDefault(); if(go.dataset.tab) state.tab = go.dataset.tab; show(go.dataset.go); return; }
+  const tab = e.target.closest("[data-tab]");
+  if(tab){ state.tab = tab.dataset.tab; if(tab.dataset.kid) state.kid = tab.dataset.kid; renderTab(); window.scrollTo(0,0); return; }
+  const day = e.target.closest("[data-day]");
+  if(day && !day.disabled){ state.day = Number(day.dataset.day); renderTab(); const dd=$("#dayDetail"); if(dd) dd.scrollIntoView({behavior: matchMedia("(prefers-reduced-motion: reduce)").matches?"auto":"smooth", block:"nearest"}); return; }
+  const kid = e.target.closest("[data-kid]");
+  if(kid){ state.kid = kid.dataset.kid; state.day = 0; renderTab(); return; }
+  const ap = e.target.closest("[data-approve]");
+  if(ap){ state.reviewDone[ap.dataset.approve]="Approved"; renderTab(); toast("Approved and assigned"); return; }
+  const rv = e.target.closest("[data-revise]");
+  if(rv){ state.reviewDone[rv.dataset.revise]="Sent back for revision"; renderTab(); toast("Sent back to TeachBot"); return; }
+  if(e.target.closest("#assignBtn")){ toast(`Assigned to ${kidById(state.kid).nick}`); return; }
+  if(e.target.closest("#regenBtn")){ const f=document.querySelector('input[name="fmt"]:checked'); runPipeline(f?f.value:"comic", $("#comp")?.checked); return; }
+  if(e.target.closest("#addKid")){ toast("In the full product this opens the new-child form"); return; }
+  if(e.target.closest("#levelBtn")){ if(state.kid==="bean"){ state.tab="test"; renderTab(); window.scrollTo(0,0); } else toast(`Level-setting test for ${kidById(state.kid).nick} added to Monday`); return; }
+  const w = e.target.closest("[data-word]");
+  if(w){ const on = w.getAttribute("aria-pressed")!=="true"; w.setAttribute("aria-pressed", on); T.words[w.dataset.word]=on; updateWordCounts(); return; }
+  if(e.target.closest("#timerBtn")){ toggleTimer(); return; }
+  if(e.target.closest("#sampleBtn")){ fillSample(); return; }
+  if(e.target.closest("#scoreBtn")){ scoreTest(); return; }
+  if(e.target.closest("#saveTestBtn")){ toast("Results saved to Bean's Progress"); return; }
+  if(e.target.closest("#resetTestBtn")){ resetTest(); return; }
+  if(e.target.closest("#playBtn")){ toast("Audio playback is available in the full product"); return; }
+});
+document.addEventListener("keydown", e => {
+  if((e.key==="Enter"||e.key===" ") && e.target.matches?.(".kid-link")){ e.preventDefault(); e.target.click(); }
+});
+document.addEventListener("submit", e => {
+  e.preventDefault();
+  if(e.target.id==="loginForm"){ state.tab="overview"; show("classroom"); }
+  if(e.target.id==="createForm"){ const f=document.querySelector('input[name="fmt"]:checked'); runPipeline(f?f.value:"comic", $("#comp").checked); }
+});
+
+buildWave($("#heroWave"), 40);
+const start = (location.hash||"").replace("#","");
+show(VIEWS.includes(start)?start:"home");
+</script>
+<script src="js/lesson-generator.js"></script>
+<script src="js/sample-unit.js"></script>
+<script src="js/generator-ui.js"></script>
+
