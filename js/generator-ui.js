@@ -28,9 +28,10 @@
   /** Working state of the open dialog. */
   const form = {
     childId: null,
-    subjects: {},          // name -> { checked, topic }
-    otherSubject: "",
-    duration: "week",
+    subjects: [],          // chosen subjects, in order: [{ name, topic }]
+    subjectQuery: "",      // what is typed in the subject search box
+    durationMode: "days",  // "lesson" or "days"
+    days: 5,               // slider value, 1 to LG.MAX_DAYS
     lessonMinutes: "",
     startDate: nextSchoolDay(),
     references: [],
@@ -77,16 +78,11 @@
 
   /** Converts the dialog state into the choices object the engine expects. */
   function currentChoices() {
-    const subjects = LG.SUBJECTS
-      .filter((name) => form.subjects[name] && form.subjects[name].checked)
-      .map((name) => ({ name, topic: form.subjects[name].topic || "" }));
-    if (form.otherSubject.trim()) {
-      subjects.push({ name: form.otherSubject.trim(), topic: (form.subjects.__other && form.subjects.__other.topic) || "" });
-    }
     return {
       child: selectedChild(),
-      subjects,
-      duration: form.duration,
+      subjects: form.subjects.map((s) => ({ name: s.name, topic: s.topic })),
+      duration: form.durationMode,
+      days: form.days,
       lessonMinutes: form.lessonMinutes ? Number(form.lessonMinutes) : undefined,
       startDate: form.startDate,
       references: form.references,
@@ -117,6 +113,12 @@
     dialog.addEventListener("input", onDialogInput);
     dialog.addEventListener("change", onDialogInput);
     dialog.addEventListener("submit", onDialogSubmit);
+    dialog.addEventListener("keydown", onSubjectKeydown);
+    // Keep the list open while an option is being clicked.
+    dialog.addEventListener("mousedown", (e) => { if (e.target.closest("[data-subject-pick]")) e.preventDefault(); });
+    dialog.addEventListener("focusout", (e) => {
+      if (e.target.id === "genSubjectSearch") { activeOption = -1; renderSubjectOptions(false); }
+    });
     return dialog;
   }
 
@@ -139,9 +141,6 @@
     const dialog = ensureDialog();
     const child = selectedChild();
     const autoMinutes = child ? LG.MINUTES_BY_ATTENTION[child.attention] || 30 : 30;
-    const built = LG.buildRequest(currentChoices());
-    const estimate = built.ok ? LG.estimateWork(built.request) : null;
-
     dialog.innerHTML = `
     <form method="dialog" class="gen-form" id="genForm" novalidate>
       <header class="gen-head">
@@ -162,27 +161,38 @@
       </fieldset>
 
       <fieldset class="gen-field">
-        <legend>2. Subjects <span class="opt">choose one or more</span></legend>
-        <div class="gen-subjects">${LG.SUBJECTS.map((name, i) => {
-          const s = form.subjects[name] || {};
-          return `<div class="gen-subject ${s.checked ? "on" : ""}">
-            <label><input type="checkbox" data-subject="${esc(name)}" ${s.checked ? "checked" : ""}> ${esc(name)}</label>
-            ${s.checked ? `<input type="text" class="gen-topic" id="genTopic${i}" data-topic="${esc(name)}" value="${esc(s.topic || "")}" placeholder="Topic (optional), e.g. ${esc(topicExample(name))}" aria-label="${esc(name)} topic">` : ""}
-          </div>`;
-        }).join("")}
-          <div class="gen-subject ${form.otherSubject ? "on" : ""}">
-            <label for="genOther">Other subject</label>
-            <input type="text" id="genOther" data-other value="${esc(form.otherSubject)}" placeholder="e.g. Spanish, Art history">
-            ${form.otherSubject ? `<input type="text" class="gen-topic" id="genTopicOther" data-topic="__other" value="${esc((form.subjects.__other || {}).topic || "")}" placeholder="Topic (optional)" aria-label="Other subject topic">` : ""}
-          </div>
+        <legend>2. Subjects <span class="opt">add one or more</span></legend>
+        <div class="gen-combo">
+          <input type="text" id="genSubjectSearch" class="gen-combo-input" role="combobox" autocomplete="off"
+            aria-autocomplete="list" aria-expanded="false" aria-controls="genSubjectList"
+            aria-label="Search subjects" value="${esc(form.subjectQuery)}"
+            ${form.subjects.length >= MAX_SUBJECTS ? "disabled placeholder=\"Up to " + MAX_SUBJECTS + " subjects per unit\"" : `placeholder="${form.subjects.length ? "Add another subject" : "Type to search, e.g. geology, algebra, Spanish"}"`}>
+          <svg class="gen-combo-icon" viewBox="0 0 20 20" aria-hidden="true"><circle cx="8.5" cy="8.5" r="5.5" fill="none" stroke="currentColor" stroke-width="2"/><path d="M13 13l4 4" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+          <ul class="gen-options" id="genSubjectList" role="listbox" aria-label="Subjects" hidden></ul>
         </div>
-        <p class="slots">Leave the topic blank and LPBot picks one from ${child ? esc(child.nick) + "'s" : "the child's"} grade, standards and interests.</p>
+        ${form.subjects.length ? `<ol class="gen-chosen" aria-label="Chosen subjects">${form.subjects.map((sub, i) => `
+          <li>
+            <span class="gen-chosen-name">${esc(sub.name)}</span>
+            <input type="text" class="gen-topic" id="genTopic${i}" data-topic-index="${i}" value="${esc(sub.topic)}"
+              placeholder="Topic (optional), e.g. ${esc(topicExample(sub.name))}" aria-label="${esc(sub.name)} topic">
+            <button type="button" class="gen-ref-x" data-subject-remove="${i}" aria-label="Remove ${esc(sub.name)}">Remove</button>
+          </li>`).join("")}</ol>` : ""}
+        <p class="slots">Leave a topic blank and LPBot picks one from ${child ? esc(child.nick) + "'s" : "the child's"} grade, standards and interests.</p>
       </fieldset>
 
       <fieldset class="gen-field">
         <legend>3. How long?</legend>
-        <div class="gen-seg" role="radiogroup" aria-label="Duration">${Object.keys(LG.DURATIONS).map((key) => `
-          <label><input type="radio" name="genDuration" value="${key}" ${form.duration === key ? "checked" : ""}> ${LG.DURATIONS[key].label}</label>`).join("")}</div>
+        <div class="gen-length">
+          <button type="button" class="gen-lesson-btn" id="genLessonBtn" aria-pressed="${form.durationMode === "lesson"}">Single lesson</button>
+          <div class="gen-slider ${form.durationMode === "lesson" ? "is-off" : ""}" id="genSliderBox">
+            <div class="gen-slider-top">
+              <label for="genDays">Or plan by the day</label>
+              <output id="genDaysOut" for="genDays">${esc(daysSummary())}</output>
+            </div>
+            <input type="range" id="genDays" min="1" max="${LG.MAX_DAYS}" step="1" value="${form.days}" style="--pct:${sliderPercent()}%" aria-valuetext="${esc(LG.describeDuration("days", form.days).label)}">
+            <div class="gen-ticks" aria-hidden="true">${Array.from({ length: LG.MAX_DAYS }, (_, i) => `<span class="${i + 1 === 5 || i + 1 === 10 ? "major" : ""}">${i + 1}</span>`).join("")}</div>
+          </div>
+        </div>
         <div class="gen-row">
           <label class="field" for="genStart">Start on<input type="date" id="genStart" value="${esc(form.startDate)}"></label>
           <label class="field" for="genMinutes">Lesson length
@@ -191,7 +201,7 @@
               ${[20, 30, 45, 60].map((m) => `<option value="${m}" ${String(form.lessonMinutes) === String(m) ? "selected" : ""}>${m} minutes</option>`).join("")}
             </select></label>
         </div>
-        <p class="slots">${durationNote()}</p>
+        <p class="slots" id="genDurationNote">${esc(durationNote())}</p>
       </fieldset>
 
       <fieldset class="gen-field">
@@ -222,7 +232,7 @@
       </fieldset>
 
       <footer class="gen-foot">
-        <span class="gen-notice" id="genNotice" role="status"></span><span class="slots" id="genEstimate">${estimate ? `${built.request.unitPlans.length} unit${built.request.unitPlans.length > 1 ? "s" : ""} · ${built.request.lessonCount} lesson${built.request.lessonCount > 1 ? "s" : ""} each · about ${estimate.requests} AI steps, roughly ${estimate.minutes} min` : "Choose a child, at least one subject and a length."}</span>
+        <span class="gen-notice" id="genNotice" role="status"></span><span class="slots" id="genEstimate">${esc(estimateText())}</span>
         <div class="gen-actions">
           <button type="button" class="btn btn-ghost" data-gen-close>Cancel</button>
           <button type="submit" class="btn btn-primary">Generate</button>
@@ -231,17 +241,157 @@
     </form>`;
   }
 
+  /** A sample topic for the placeholder next to each chosen subject. */
   function topicExample(subject) {
-    return { Science: "rocks and minerals", Math: "linear equations", "English Language Arts": "mystery story structure", "Social Studies": "the Constitution" }[subject] || "a topic";
+    const examples = {
+      "Science": "rocks and minerals", "Earth Science": "the water cycle", "Life Science": "food webs",
+      "Physical Science": "forces and motion", "Biology": "cells", "Chemistry": "the periodic table", "Physics": "simple machines",
+      "Math": "fractions", "Pre-Algebra": "ratios and rates", "Algebra": "linear equations", "Geometry": "area and volume",
+      "Statistics and Probability": "mean, median and mode", "English Language Arts": "mystery story structure",
+      "Reading": "main idea and details", "Writing": "persuasive paragraphs", "Literature": "poetry",
+      "Social Studies": "communities", "U.S. History": "the Constitution", "World History": "ancient Egypt",
+      "Geography": "map projections", "Civics and Government": "the three branches", "Economics": "supply and demand",
+      "Spanish": "greetings", "French": "numbers and colors", "Art": "color theory", "Music": "rhythm",
+      "Computer Science": "algorithms", "Health": "nutrition", "Physical Education": "teamwork games",
+    };
+    return examples[subject] || "a focus area";
+  }
+
+  /** The slider's readout, e.g. "5 days · 1 week · Mon, Oct 26 to Fri, Oct 30". */
+  function daysSummary() {
+    const label = LG.describeDuration("days", form.days).label;
+    const dates = LG.schoolDayLabels(form.startDate, form.days);
+    const count = form.days + (form.days === 1 ? " day" : " days");
+    const span = dates.length > 1 ? dates[0] + " to " + dates[dates.length - 1] : dates[0];
+    return (label === count ? count : count + " · " + label) + (span ? " · " + span : "");
   }
 
   function durationNote() {
-    const d = LG.DURATIONS[form.duration];
-    const subjectCount = currentChoices().subjects.length;
-    if (!d) return "";
-    if (d.integrated && subjectCount > 1) return "With several subjects, a single lesson combines them into one cross-curricular lesson.";
-    if (d.lessonsPerSubject >= LG.MIN_LESSONS_FOR_QUIZ) return `Each subject gets ${d.lessonsPerSubject} lessons; the last is a review day with a 25-point quiz.`;
-    return "Each subject gets one lesson with an exit ticket.";
+    const subjectCount = form.subjects.length;
+    if (form.durationMode === "lesson") {
+      return subjectCount > 1
+        ? "One cross-curricular lesson that teaches all your subjects together, ending with an exit ticket."
+        : "One lesson with an exit ticket.";
+    }
+    const start = subjectCount > 1 ? "Each subject gets one lesson a day" : "One lesson a day";
+    const span = form.days === 1 ? "1 school day" : form.days + " school days";
+    if (form.days >= LG.MIN_LESSONS_FOR_QUIZ) {
+      return `${start} for ${span}; the last day is a review with a 25-point quiz.`;
+    }
+    return `${start} for ${span}, each ending with an exit ticket.`;
+  }
+
+  /** The footer line: what will be made and roughly how long it takes. */
+  function estimateText() {
+    const built = LG.buildRequest(currentChoices());
+    if (!built.ok) return "Choose a child, at least one subject and a length.";
+    const r = built.request;
+    const e = LG.estimateWork(r);
+    return `${r.unitPlans.length} unit${r.unitPlans.length > 1 ? "s" : ""} · ${r.lessonCount} lesson${r.lessonCount > 1 ? "s" : ""} each · about ${e.requests} AI steps, roughly ${e.minutes} min`;
+  }
+
+  /** How far along the slider track the thumb sits, for the filled part. */
+  function sliderPercent() {
+    return ((form.days - 1) / (LG.MAX_DAYS - 1)) * 100;
+  }
+
+  /** Updates the length readouts in place, so dragging the slider is smooth. */
+  function refreshLength() {
+    const out = document.getElementById("genDaysOut");
+    const slider = document.getElementById("genDays");
+    const box = document.getElementById("genSliderBox");
+    const button = document.getElementById("genLessonBtn");
+    if (out) out.textContent = daysSummary();
+    if (slider) {
+      slider.setAttribute("aria-valuetext", LG.describeDuration("days", form.days).label);
+      slider.style.setProperty("--pct", sliderPercent() + "%");
+    }
+    if (box) box.classList.toggle("is-off", form.durationMode === "lesson");
+    if (button) button.setAttribute("aria-pressed", String(form.durationMode === "lesson"));
+    const note = document.getElementById("genDurationNote");
+    if (note) note.textContent = durationNote();
+    const estimate = document.getElementById("genEstimate");
+    if (estimate) estimate.textContent = estimateText();
+  }
+
+  // --- subject search box ----------------------------------------------------
+
+  const MAX_SUBJECTS = 4;
+  let activeOption = -1;   // highlighted option in the open list
+
+  /** The options to show for the current search text. */
+  function subjectOptions() {
+    const typed = form.subjectQuery.trim();
+    const chosen = form.subjects.map((s) => s.name);
+    const matches = LG.searchSubjects(typed, chosen).slice(0, 8).map((name) => ({ name, custom: false }));
+    const exact = matches.some((m) => m.name.toLowerCase() === typed.toLowerCase()) ||
+      chosen.some((n) => n.toLowerCase() === typed.toLowerCase());
+    if (typed && !exact) matches.push({ name: typed, custom: true });
+    return matches;
+  }
+
+  /** Draws (or hides) the dropdown under the search box. */
+  function renderSubjectOptions(open) {
+    const input = document.getElementById("genSubjectSearch");
+    const list = document.getElementById("genSubjectList");
+    if (!input || !list) return;
+    const options = open ? subjectOptions() : [];
+    if (activeOption >= options.length) activeOption = options.length - 1;
+    list.innerHTML = options.length
+      ? options.map((o, i) => `<li role="option" id="genOpt${i}" class="${i === activeOption ? "active" : ""}" aria-selected="${i === activeOption}" data-subject-pick="${esc(o.name)}">${o.custom ? `Add “<b>${esc(o.name)}</b>” as a subject` : highlight(o.name, form.subjectQuery.trim())}</li>`).join("")
+      : "";
+    list.hidden = !options.length;
+    input.setAttribute("aria-expanded", String(!!options.length));
+    if (activeOption >= 0 && options.length) input.setAttribute("aria-activedescendant", "genOpt" + activeOption);
+    else input.removeAttribute("aria-activedescendant");
+    const active = list.querySelector(".active");
+    if (active) active.scrollIntoView({ block: "nearest" });
+  }
+
+  /** Bolds the typed letters inside a subject name. */
+  function highlight(name, typed) {
+    const at = typed ? name.toLowerCase().indexOf(typed.toLowerCase()) : -1;
+    if (at < 0) return esc(name);
+    return esc(name.slice(0, at)) + "<b>" + esc(name.slice(at, at + typed.length)) + "</b>" + esc(name.slice(at + typed.length));
+  }
+
+  /** Adds a subject to the list and puts the cursor back in the search box. */
+  function addSubject(name) {
+    const clean = String(name || "").trim();
+    if (!clean) return;
+    if (form.subjects.length >= MAX_SUBJECTS) { notify("Choose up to " + MAX_SUBJECTS + " subjects per unit."); return; }
+    if (form.subjects.some((s) => s.name.toLowerCase() === clean.toLowerCase())) { notify(clean + " is already on the list."); return; }
+    form.subjects.push({ name: clean, topic: "" });
+    form.subjectQuery = "";
+    activeOption = -1;
+    renderForm();
+    const input = document.getElementById("genSubjectSearch");
+    if (input && !input.disabled) input.focus();
+  }
+
+  function onSubjectKeydown(e) {
+    if (e.target.id !== "genSubjectSearch") return;
+    const options = subjectOptions();
+    const list = document.getElementById("genSubjectList");
+    const isOpen = list && !list.hidden;
+    if (e.key === "ArrowDown") {
+      e.preventDefault();
+      activeOption = isOpen ? Math.min(activeOption + 1, options.length - 1) : 0;
+      renderSubjectOptions(true);
+    } else if (e.key === "ArrowUp") {
+      e.preventDefault();
+      activeOption = Math.max(activeOption - 1, 0);
+      renderSubjectOptions(true);
+    } else if (e.key === "Enter") {
+      e.preventDefault(); // never submit the form from the search box
+      const pick = options[activeOption >= 0 ? activeOption : 0];
+      if (pick) addSubject(pick.name);
+    } else if (e.key === "Escape" && isOpen) {
+      e.preventDefault();
+      e.stopPropagation(); // close the list, not the dialog
+      activeOption = -1;
+      renderSubjectOptions(false);
+    }
   }
 
   // --- dialog events --------------------------------------------------------
@@ -249,38 +399,48 @@
   function onDialogInput(e) {
     const t = e.target;
     if (t.name === "genChild") { form.childId = t.value; renderForm(); return; }
-    if (t.dataset.subject) {
-      const name = t.dataset.subject;
-      form.subjects[name] = form.subjects[name] || { topic: "" };
-      form.subjects[name].checked = t.checked;
-      renderForm();
-      const topic = document.querySelector(`[data-topic="${CSS.escape(name)}"]`);
-      if (topic && t.checked) topic.focus();
+    if (t.id === "genSubjectSearch") {
+      form.subjectQuery = t.value;
+      activeOption = t.value.trim() ? 0 : -1;
+      renderSubjectOptions(true);
       return;
     }
-    if (t.dataset.topic) {
-      const key = t.dataset.topic;
-      form.subjects[key] = form.subjects[key] || { checked: key !== "__other" };
-      form.subjects[key].topic = t.value;
+    if (t.dataset.topicIndex !== undefined) {
+      const sub = form.subjects[Number(t.dataset.topicIndex)];
+      if (sub) sub.topic = t.value;
       return; // no re-render while typing
     }
-    if (t.dataset.other !== undefined) {
-      const hadValue = !!form.otherSubject;
-      form.otherSubject = t.value;
-      if (hadValue !== !!t.value && e.type === "change") renderForm();
+    if (t.id === "genDays") {
+      form.days = Number(t.value);
+      form.durationMode = "days";
+      refreshLength();
       return;
     }
-    if (t.name === "genDuration") { form.duration = t.value; renderForm(); return; }
-    if (t.id === "genStart") { form.startDate = t.value; return; }
-    if (t.id === "genMinutes") { form.lessonMinutes = t.value; renderForm(); return; }
+    if (t.id === "genStart") { form.startDate = t.value; refreshLength(); return; }
+    if (t.id === "genMinutes") { form.lessonMinutes = t.value; refreshLength(); return; }
     if (t.id === "genOpenRefs") { form.useOpenReferences = t.checked; return; }
-    if (t.id === "genStandards") { form.useStandards = t.checked; renderForm(); return; }
+    if (t.id === "genStandards") { form.useStandards = t.checked; refreshLength(); return; }
     if (t.id === "refFile" && t.files && t.files[0]) { readReferenceFile(t.files[0]); }
   }
 
   function onDialogClick(e) {
+    const pick = e.target.closest("[data-subject-pick]");
+    if (pick) { addSubject(pick.dataset.subjectPick); return; }
+    if (e.target.id === "genSubjectSearch") { renderSubjectOptions(true); return; }
     const t = e.target.closest("button");
     if (!t) return;
+    if (t.id === "genLessonBtn") {
+      form.durationMode = form.durationMode === "lesson" ? "days" : "lesson";
+      refreshLength();
+      return;
+    }
+    if (t.dataset.subjectRemove !== undefined) {
+      form.subjects.splice(Number(t.dataset.subjectRemove), 1);
+      renderForm();
+      const input = document.getElementById("genSubjectSearch");
+      if (input) input.focus();
+      return;
+    }
     if (t.hasAttribute("data-gen-close")) { closeDialog(); return; }
     if (t.dataset.refKind) { form.refKind = t.dataset.refKind; renderForm(); return; }
     if (t.hasAttribute("data-ref-add")) { addReferenceFromInputs(); return; }

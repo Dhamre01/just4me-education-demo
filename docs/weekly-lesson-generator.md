@@ -20,20 +20,21 @@ Every button opens the same dialog (`window.J4M.generatorUi.openDialog(childId)`
 
 ## The dialog
 
-| Choice | Options | Notes |
+| Choice | Control | Notes |
 |---|---|---|
-| 1. Who is it for? | Any Virtual Child | Grade, reading level and attention span are shown on each card. |
-| 2. Subjects | Science, Math, English Language Arts, Social Studies, plus one typed-in subject; each with an optional topic | Up to 4. A blank topic lets LPBot choose one from the grade, standards and interests. |
-| 3. How long? | Single lesson, 1 day, 3 days, 1 week, 2 weeks; start date; lesson length | Lesson length defaults from the attention span (Short 20, Average 30, Long 45 minutes). Weekends are skipped when dating lessons. |
+| 1. Who is it for? | A card for each Virtual Child | Grade, reading level and attention span are shown on each card. |
+| 2. Subjects | A search box with a dropdown. Typing filters about 30 subjects by name and by related words (typing "geology" finds Earth Science). Arrow keys and Enter pick; Escape closes the list. A subject that isn't listed can be added as typed. | Picked subjects appear in a numbered list below the box, each with an optional topic and a Remove button. Up to 4 subjects. A blank topic lets LPBot choose one from the grade, standards and interests. |
+| 3. How long? | A **Single lesson** button, or a slider from 1 to 10 school days (one tick per day; 5 and 10 are marked as 1 and 2 weeks). Also a start date and a lesson length. | The readout shows the day count and the dates covered, skipping weekends. Lesson length defaults from the attention span (Short 20, Average 30, Long 45 minutes). |
 | 4. Reference sources | Links, pasted text, uploaded text files (.txt, .md, .csv, .html); "also use trusted open references"; "align to New Jersey standards" | Pasted and uploaded text is sent to the agents (first 12,000 characters each). Links are cited by title only, because the agents cannot open web pages. |
 
-How durations map to lessons:
+How the length maps to lessons:
 
-| Duration | One subject | Several subjects |
+| Choice | One subject | Several subjects |
 |---|---|---|
 | Single lesson | 1 lesson | 1 cross-curricular lesson covering all of them |
-| 1 day | 1 lesson | 1 lesson per subject |
-| 3 days, 1 week, 2 weeks | 3, 5 or 10 lessons | that many lessons per subject, one unit per subject |
+| Slider at N days | N lessons, one per school day | N lessons per subject, one unit per subject |
+
+Units of 3 or more days end with a review day and a 25-point quiz.
 
 The footer shows an estimate (number of AI steps and minutes) before the parent starts.
 

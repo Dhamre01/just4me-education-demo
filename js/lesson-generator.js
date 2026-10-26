@@ -48,21 +48,87 @@
   // =========================================================================
 
   /**
-   * Duration choices shown in the dialog.
-   * lessonsPerSubject: how many lessons each subject gets.
-   * integrated: when true and several subjects are chosen, they are combined
-   *             into one cross-curricular lesson instead of one per subject.
+   * How long a unit runs. The parent either picks "Single lesson" or sets a
+   * number of school days with the slider (1 to MAX_DAYS). Each day gives
+   * every chosen subject one lesson. A single lesson with several subjects
+   * becomes one cross-curricular lesson.
    */
-  const DURATIONS = {
-    lesson: { label: "Single lesson", lessonsPerSubject: 1, integrated: true },
-    day: { label: "1 day", lessonsPerSubject: 1, integrated: false },
-    threeDays: { label: "3 days", lessonsPerSubject: 3, integrated: false },
-    week: { label: "1 week", lessonsPerSubject: 5, integrated: false },
-    twoWeeks: { label: "2 weeks", lessonsPerSubject: 10, integrated: false },
-  };
+  const MAX_DAYS = 10;
 
-  /** Subjects offered as checkboxes. Parents can also type their own. */
-  const SUBJECTS = ["Science", "Math", "English Language Arts", "Social Studies"];
+  /**
+   * Subjects the dialog's search box suggests. "also" holds other words a
+   * parent might type to find the subject (searched, never shown).
+   * Parents can also add a subject that is not on the list.
+   */
+  const SUBJECT_CATALOG = [
+    { name: "Science", also: "general science" },
+    { name: "Earth Science", also: "geology rocks weather space astronomy" },
+    { name: "Life Science", also: "biology animals plants ecology" },
+    { name: "Physical Science", also: "physics chemistry forces energy" },
+    { name: "Biology", also: "life science cells genetics" },
+    { name: "Chemistry", also: "elements reactions" },
+    { name: "Physics", also: "forces motion energy" },
+    { name: "Math", also: "mathematics arithmetic" },
+    { name: "Pre-Algebra", also: "math" },
+    { name: "Algebra", also: "math equations" },
+    { name: "Geometry", also: "math shapes" },
+    { name: "Statistics and Probability", also: "math data" },
+    { name: "English Language Arts", also: "ela english" },
+    { name: "Reading", also: "ela phonics literature" },
+    { name: "Writing", also: "ela composition essays grammar" },
+    { name: "Literature", also: "ela novels poetry" },
+    { name: "Social Studies", also: "civics society" },
+    { name: "U.S. History", also: "american history social studies" },
+    { name: "World History", also: "social studies ancient" },
+    { name: "Geography", also: "maps social studies" },
+    { name: "Civics and Government", also: "social studies constitution" },
+    { name: "Economics", also: "money personal finance" },
+    { name: "Spanish", also: "world language foreign language" },
+    { name: "French", also: "world language foreign language" },
+    { name: "Art", also: "drawing painting visual arts" },
+    { name: "Music", also: "arts" },
+    { name: "Computer Science", also: "coding programming technology" },
+    { name: "Health", also: "nutrition wellness" },
+    { name: "Physical Education", also: "pe fitness sports" },
+  ];
+
+  /** Subject names only, for callers that just need the list. */
+  const SUBJECTS = SUBJECT_CATALOG.map((s) => s.name);
+
+  /**
+   * Finds catalog subjects matching what the parent typed. Names that start
+   * with the text come first, then names containing it, then synonyms.
+   * @param {string} query
+   * @param {string[]} exclude  Subjects already chosen.
+   * @returns {string[]}
+   */
+  function searchSubjects(query, exclude) {
+    const q = asText(query).toLowerCase();
+    const skip = (exclude || []).map((n) => n.toLowerCase());
+    const available = SUBJECT_CATALOG.filter((s) => skip.indexOf(s.name.toLowerCase()) === -1);
+    if (!q) return available.map((s) => s.name);
+    const starts = [], contains = [], synonyms = [];
+    available.forEach((s) => {
+      const name = s.name.toLowerCase();
+      if (name.indexOf(q) === 0 || name.split(/\s+/).some((w) => w.indexOf(q) === 0)) starts.push(s.name);
+      else if (name.indexOf(q) !== -1) contains.push(s.name);
+      else if (s.also.indexOf(q) !== -1) synonyms.push(s.name);
+    });
+    return starts.concat(contains, synonyms);
+  }
+
+  /**
+   * Names a duration for people ("3 days", "1 week") and for prompts
+   * ("3-day", "1-week").
+   * @param {string} mode  "lesson" or "days"
+   * @param {number} days  1 to MAX_DAYS (ignored for "lesson")
+   */
+  function describeDuration(mode, days) {
+    if (mode === "lesson") return { label: "Single lesson", phrase: "single-lesson" };
+    if (days === 5) return { label: "1 week", phrase: "1-week" };
+    if (days === 10) return { label: "2 weeks", phrase: "2-week" };
+    return { label: days + (days === 1 ? " day" : " days"), phrase: days + "-day" };
+  }
 
   /** Default lesson length, in minutes, for each attention span. */
   const MINUTES_BY_ATTENTION = { Short: 20, Average: 30, Long: 45 };
@@ -173,7 +239,8 @@
    * @param {object} choices
    * @param {object} choices.child       Virtual Child profile.
    * @param {Array}  choices.subjects    [{ name, topic }]
-   * @param {string} choices.duration    A key of DURATIONS.
+   * @param {string} choices.duration    "lesson" or "days".
+   * @param {number} [choices.days]       School days, 1 to MAX_DAYS, when duration is "days".
    * @param {Array}  choices.references  [{ kind: "link"|"text", title, url, content }]
    * @param {number} [choices.lessonMinutes]  Override for lesson length.
    * @param {string} [choices.startDate]      "YYYY-MM-DD".
@@ -192,9 +259,10 @@
     if (subjects.length === 0) errors.push("Choose at least one subject.");
     if (subjects.length > 4) errors.push("Choose up to 4 subjects at a time.");
 
-    const durationKey = choices && choices.duration;
-    const duration = DURATIONS[durationKey];
-    if (!duration) errors.push("Choose how long the unit should run.");
+    const durationMode = choices && choices.duration;
+    const days = Math.round(Number(choices && choices.days));
+    const validLength = durationMode === "lesson" || (durationMode === "days" && days >= 1 && days <= MAX_DAYS);
+    if (!validLength) errors.push("Choose how long the unit should run.");
 
     const references = asArray(choices && choices.references)
       .map((r) => ({
@@ -211,7 +279,9 @@
       Number(choices.lessonMinutes) || MINUTES_BY_ATTENTION[child.attention] || 30;
 
     // Several subjects in a single lesson become one cross-curricular unit.
-    const integrated = duration.integrated && subjects.length > 1;
+    const lessonCount = durationMode === "lesson" ? 1 : days;
+    const duration = describeDuration(durationMode, days);
+    const integrated = durationMode === "lesson" && subjects.length > 1;
     const unitPlans = integrated
       ? [{
           name: subjects.map((s) => s.name).join(" + "),
@@ -225,11 +295,12 @@
       request: {
         child,
         unitPlans,
-        durationKey,
+        durationMode,
         durationLabel: duration.label,
-        lessonCount: duration.lessonsPerSubject,
+        durationPhrase: duration.phrase,
+        lessonCount,
         lessonMinutes: minutes,
-        dayLabels: schoolDayLabels(choices.startDate || "", duration.lessonsPerSubject),
+        dayLabels: schoolDayLabels(choices.startDate || "", lessonCount),
         references,
         useStandards: choices.useStandards !== false,
         useOpenReferences: choices.useOpenReferences !== false,
@@ -315,7 +386,7 @@
 
 ROLE: You are LPBot, the lesson planner.
 
-TASK: Plan a ${request.durationLabel.toLowerCase()} ${unitPlan.name} unit of ${request.lessonCount} lesson(s), ${request.lessonMinutes} minutes each.
+TASK: Plan a ${request.durationPhrase} ${unitPlan.name} unit of ${request.lessonCount} lesson(s), ${request.lessonMinutes} minutes each.
 ${unitPlan.integratedSubjects ? "This is ONE cross-curricular lesson that teaches all of these subjects together: " + unitPlan.integratedSubjects.join(", ") + "." : ""}
 Topic: ${unitPlan.topic || "Choose a strong, grade-appropriate topic that fits the learner's interests and their state standards."}
 ${quiz ? "The last lesson must be a review followed by a unit quiz (the quiz itself is written later)." : "There is no unit quiz; each lesson ends with an exit ticket."}
@@ -923,8 +994,11 @@ REPLY with only one JSON object:
   // =========================================================================
 
   const LessonGenerator = {
-    DURATIONS,
+    MAX_DAYS,
     SUBJECTS,
+    SUBJECT_CATALOG,
+    searchSubjects,
+    describeDuration,
     MINUTES_BY_ATTENTION,
     MAX_FACT_ROUNDS,
     MIN_LESSONS_FOR_QUIZ,

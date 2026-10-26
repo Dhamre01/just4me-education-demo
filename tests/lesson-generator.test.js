@@ -82,7 +82,7 @@ function fakeAi(overrides) {
 
 function request(extra) {
   const built = LG.buildRequest(Object.assign({
-    child: JUNIPER, subjects: [{ name: "Science", topic: "Rocks" }], duration: "week", references: [], startDate: "2026-10-26",
+    child: JUNIPER, subjects: [{ name: "Science", topic: "Rocks" }], duration: "days", days: 5, references: [], startDate: "2026-10-26",
   }, extra || {}));
   assert.equal(built.ok, true, JSON.stringify(built.errors));
   return built.request;
@@ -91,7 +91,7 @@ function request(extra) {
 // --- Building the request ----------------------------------------------------
 
 test("buildRequest reports every missing choice in plain language", () => {
-  const result = LG.buildRequest({ subjects: [], duration: "forever" });
+  const result = LG.buildRequest({ subjects: [], duration: "days", days: 11 });
   assert.equal(result.ok, false);
   assert.deepEqual(result.errors, [
     "Choose which child this unit is for.",
@@ -117,6 +117,24 @@ test("several subjects in a single lesson become one cross-curricular unit", () 
   assert.equal(r.unitPlans.length, 1);
   assert.equal(r.unitPlans[0].name, "Science + Math");
   assert.deepEqual(r.unitPlans[0].integratedSubjects, ["Science", "Math"]);
+});
+
+test("the slider's day count sets the lessons and the label", () => {
+  assert.equal(request({ days: 1 }).durationLabel, "1 day");
+  assert.equal(request({ days: 3 }).lessonCount, 3);
+  assert.equal(request({ days: 5 }).durationLabel, "1 week");
+  assert.equal(request({ days: 7 }).durationLabel, "7 days");
+  assert.equal(request({ days: 10 }).durationLabel, "2 weeks");
+  assert.equal(request({ days: 7 }).durationPhrase, "7-day");
+  assert.equal(request({ duration: "lesson" }).lessonCount, 1);
+});
+
+test("subject search matches names first, then synonyms, and skips chosen ones", () => {
+  assert.deepEqual(LG.searchSubjects("geo").slice(0, 2), ["Geometry", "Geography"]);
+  assert.ok(LG.searchSubjects("geology").includes("Earth Science"));
+  assert.equal(LG.searchSubjects("alg", ["Algebra"]).includes("Algebra"), false);
+  assert.ok(LG.searchSubjects("spanish").includes("Spanish"));
+  assert.equal(LG.searchSubjects("").length, LG.SUBJECTS.length);
 });
 
 test("references are trimmed, empty ones dropped, and long text capped", () => {
