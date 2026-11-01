@@ -1,0 +1,754 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="description" content="Just4Me Education investor demo: lessons built around your child, approved by you. Mock-up with sample data only.">
+<meta property="og:title" content="Just4Me Education Investor Demo">
+<meta property="og:description" content="Lessons built around your child, approved by you. Mock-up with sample data only.">
+<meta name="robots" content="noindex">
+<style>:root{color-scheme:light;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}img{max-width:100%}[hidden]{display:none!important}</style>
+<title>Just4Me Education Investor Demo</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,800&family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400&display=swap">
+<style>
+/* Layout: calm parent "shell" (paper, sky blue, one sun-yellow action color) in a single 1080px column;
+   the child-facing lesson preview is the one bright, playful moment. */
+:root {
+  --paper: #fbfcf8;
+  --card: #ffffff;
+  --line: #d9dfd0;
+  --ink: #1c2b3a;
+  --ink-soft: #4a5a68;
+  --sky: #2c6fb7;
+  --sky-soft: #e1ecf8;
+  --sun: #f4b52c;
+  --sun-ink: #3d2a00;
+  --leaf: #2f7d5b;
+  --leaf-soft: #dcefe4;
+  --berry: #b8406a;
+  --berry-soft: #f7e2ea;
+  --sc-sky: #bfe0f5;
+  --sc-ground: #c9a26b;
+  --sc-l1: #b58c57;
+  --sc-l2: #9c7646;
+  --sc-l3: #85633a;
+  --sc-river: #5aa6d6;
+  --sc-dino: #4f9a6e;
+  --sc-bone: #fff7e6;
+  --font-display: "Bricolage Grotesque", "Trebuchet MS", system-ui, sans-serif;
+  --font-body: "Atkinson Hyperlegible", Verdana, system-ui, sans-serif;
+  --r: 14px;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --paper: #121a21; --card: #1b2630; --line: #2a3743; --ink: #e8eef2; --ink-soft: #a3b1bc;
+    --sky: #7cb2ec; --sky-soft: #172a3f; --sun: #f6c04d; --sun-ink: #2a1d00;
+    --leaf: #5cc495; --leaf-soft: #173527; --berry: #ec84a9; --berry-soft: #3a1a27;
+    --sc-sky: #29445c; --sc-ground: #8a6c45; --sc-l1: #7a5d39; --sc-l2: #684e2f; --sc-l3: #574126;
+    --sc-river: #3f7fae; --sc-dino: #3f8a5e; --sc-bone: #f3e9d2;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --paper: #121a21; --card: #1b2630; --line: #2a3743; --ink: #e8eef2; --ink-soft: #a3b1bc;
+  --sky: #7cb2ec; --sky-soft: #172a3f; --sun: #f6c04d; --sun-ink: #2a1d00;
+  --leaf: #5cc495; --leaf-soft: #173527; --berry: #ec84a9; --berry-soft: #3a1a27;
+  --sc-sky: #29445c; --sc-ground: #8a6c45; --sc-l1: #7a5d39; --sc-l2: #684e2f; --sc-l3: #574126;
+  --sc-river: #3f7fae; --sc-dino: #3f8a5e; --sc-bone: #f3e9d2;
+  color-scheme: dark;
+}
+* { box-sizing: border-box; }
+html { scroll-behavior: smooth; scroll-padding-top: calc(70px + env(safe-area-inset-top, 0px)); }
+@media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } }
+body {
+  margin: 0; background: var(--paper); color: var(--ink);
+  font-family: var(--font-body); font-size: 17px; line-height: 1.6;
+}
+body::before { content: ""; position: fixed; inset: 0 0 auto; height: env(safe-area-inset-top, 0px); z-index: 10; background: var(--card); }
+.wrap { max-width: 1080px; margin: 0 auto; padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); }
+h1, h2, h3, h4 { font-family: var(--font-display); line-height: 1.15; margin: 0; text-wrap: balance; }
+h1 { font-size: clamp(34px, 5.6vw, 56px); font-weight: 800; letter-spacing: -0.01em; }
+h2 { font-size: clamp(26px, 3.6vw, 36px); font-weight: 800; }
+h3 { font-size: 21px; font-weight: 600; }
+h4 { font-size: 17px; font-weight: 600; }
+p { margin: 0; }
+a { color: var(--sky); }
+:focus-visible { outline: 3px solid var(--sky); outline-offset: 2px; border-radius: 6px; }
+.eyebrow { font-size: 13px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; color: var(--sky); }
+.lede { font-size: 19px; color: var(--ink-soft); max-width: 60ch; }
+.muted { color: var(--ink-soft); }
+.small { font-size: 14px; }
+
+/* Header */
+header.top { position: sticky; top: env(safe-area-inset-top, 0px); z-index: 9; background: var(--card); border-bottom: 1px solid var(--line); }
+.top .wrap { display: flex; align-items: center; gap: 16px; padding-block: 12px; flex-wrap: wrap; }
+.brand { display: flex; align-items: center; gap: 10px; font-family: var(--font-display); font-weight: 800; font-size: 20px; color: var(--ink); text-decoration: none; }
+.brand svg { flex: none; }
+.top nav { display: flex; gap: 18px; flex-wrap: wrap; margin-left: auto; font-size: 15px; }
+.top nav a { color: var(--ink-soft); text-decoration: none; }
+.top nav a:hover { color: var(--ink); text-decoration: underline; }
+.mock { display: inline-flex; align-items: center; gap: 6px; font-size: 13px; font-weight: 700; color: var(--berry); background: var(--berry-soft); border-radius: 999px; padding: 4px 12px; }
+@media (max-width: 720px) { .top nav { display: none; } .mock { margin-left: auto; } }
+
+section { padding-block: 64px; }
+section + section { border-top: 1px solid var(--line); }
+.sec-head { display: flex; flex-direction: column; gap: 10px; margin-bottom: 32px; }
+
+/* Buttons */
+.btn { font: inherit; font-weight: 700; font-size: 16px; border-radius: 999px; padding: 10px 20px; cursor: pointer; border: 2px solid transparent; display: inline-flex; align-items: center; gap: 8px; text-decoration: none; }
+.btn-sun { background: var(--sun); color: var(--sun-ink); }
+.btn-sun:hover { filter: brightness(1.05); }
+.btn-ghost { background: transparent; color: var(--ink); border-color: var(--line); }
+.btn-ghost:hover { border-color: var(--ink-soft); }
+.btn[disabled] { cursor: default; opacity: .9; }
+
+/* Hero */
+.hero { padding-block: 56px 64px; }
+.hero-grid { display: grid; grid-template-columns: 1.1fr 1fr; gap: 48px; align-items: center; }
+.hero-copy { display: flex; flex-direction: column; gap: 20px; min-width: 0; }
+.hero-actions { display: flex; gap: 12px; flex-wrap: wrap; }
+.trust { display: flex; gap: 8px 20px; flex-wrap: wrap; font-size: 15px; color: var(--ink-soft); padding: 0; margin: 0; list-style: none; }
+.trust li { display: flex; align-items: center; gap: 6px; }
+.trust li::before { content: ""; width: 8px; height: 8px; border-radius: 50%; background: var(--leaf); }
+@media (max-width: 860px) { .hero-grid { grid-template-columns: 1fr; gap: 32px; } }
+
+/* Approval card (hero) */
+.approve-card { background: var(--card); border: 1px solid var(--line); border-radius: 20px; padding: 22px; display: flex; flex-direction: column; gap: 14px; box-shadow: 0 10px 30px rgba(28, 43, 58, .08); min-width: 0; }
+.ac-top { display: flex; justify-content: space-between; align-items: center; gap: 10px; flex-wrap: wrap; }
+.pill { font-size: 13px; font-weight: 700; border-radius: 999px; padding: 3px 10px; white-space: nowrap; }
+.pill-wait { background: var(--sky-soft); color: var(--sky); }
+.pill-ok { background: var(--leaf-soft); color: var(--leaf); }
+.checks { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 6px; font-size: 15px; }
+.checks li { display: flex; gap: 8px; align-items: baseline; }
+.checks li::before { content: "✓"; color: var(--leaf); font-weight: 700; }
+.fix { background: var(--sky-soft); border-radius: 10px; padding: 10px 12px; font-size: 14px; display: flex; flex-direction: column; gap: 4px; }
+.fix s { color: var(--ink-soft); }
+.ac-actions { display: flex; gap: 10px; flex-wrap: wrap; }
+.ac-done { font-size: 15px; color: var(--leaf); font-weight: 700; }
+
+/* Steps */
+.steps { display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px; list-style: none; margin: 0; padding: 0; counter-reset: step; }
+.steps li { display: flex; flex-direction: column; gap: 8px; min-width: 0; }
+.steps li::before { counter-increment: step; content: counter(step); font-family: var(--font-display); font-weight: 800; font-size: 18px; width: 36px; height: 36px; border-radius: 50%; display: grid; place-items: center; background: var(--sky-soft); color: var(--sky); }
+.steps li.you::before { background: var(--sun); color: var(--sun-ink); }
+@media (max-width: 860px) { .steps { grid-template-columns: repeat(2, 1fr); } }
+@media (max-width: 480px) { .steps { grid-template-columns: 1fr; } }
+
+/* Classroom sample */
+.classroom { background: var(--card); border: 1px solid var(--line); border-radius: 20px; overflow: hidden; }
+.cr-bar { display: flex; gap: 12px 24px; align-items: center; flex-wrap: wrap; padding: 16px 20px; border-bottom: 1px solid var(--line); }
+.child { display: flex; gap: 12px; align-items: center; }
+.avatar { width: 44px; height: 44px; border-radius: 50%; background: var(--sun); color: var(--sun-ink); display: grid; place-items: center; font-family: var(--font-display); font-weight: 800; font-size: 20px; flex: none; }
+.chips { display: flex; flex-wrap: wrap; gap: 6px; padding: 0; margin: 0; list-style: none; }
+.chips li { font-size: 13px; background: var(--paper); border: 1px solid var(--line); border-radius: 999px; padding: 2px 10px; }
+.viewtog { margin-left: auto; display: inline-flex; border: 1px solid var(--line); border-radius: 999px; padding: 3px; gap: 2px; }
+.viewtog button { font: inherit; font-size: 14px; font-weight: 700; border: 0; background: transparent; color: var(--ink-soft); border-radius: 999px; padding: 6px 14px; cursor: pointer; }
+.viewtog button[aria-pressed="true"] { background: var(--sky); color: var(--card); }
+.week { display: grid; grid-template-columns: repeat(5, 1fr); border-bottom: 1px solid var(--line); }
+.day-tab { font: inherit; text-align: left; background: transparent; border: 0; border-right: 1px solid var(--line); padding: 14px 16px; cursor: pointer; color: var(--ink); display: flex; flex-direction: column; gap: 4px; min-width: 0; border-bottom: 4px solid transparent; }
+.day-tab:last-child { border-right: 0; }
+.day-tab:hover { background: var(--paper); }
+.day-tab[aria-selected="true"] { background: var(--paper); border-bottom-color: var(--sky); }
+.day-tab .dn { font-size: 13px; font-weight: 700; color: var(--ink-soft); text-transform: uppercase; letter-spacing: .06em; }
+.day-tab .dt { font-weight: 700; font-size: 15px; line-height: 1.3; }
+.day-tab .pill { align-self: flex-start; font-size: 12px; }
+.day-tab.locked { opacity: .5; }
+@media (max-width: 760px) {
+  .week { grid-template-columns: 1fr; }
+  .day-tab { border-right: 0; border-bottom: 1px solid var(--line); border-left: 4px solid transparent; flex-direction: row; flex-wrap: wrap; align-items: center; gap: 4px 10px; }
+  .day-tab[aria-selected="true"] { border-left-color: var(--sky); border-bottom-color: var(--line); }
+}
+.plan { padding: 24px 20px 28px; display: grid; grid-template-columns: 1.35fr 1fr; gap: 28px; }
+.plan > * { min-width: 0; }
+@media (max-width: 860px) { .plan { grid-template-columns: 1fr; } }
+.plan-main, .plan-side { display: flex; flex-direction: column; gap: 18px; }
+.std { font-size: 14px; background: var(--sky-soft); border-radius: 10px; padding: 10px 12px; }
+.std b { color: var(--sky); }
+.timeline { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; }
+.timeline li { display: grid; grid-template-columns: 64px 1fr; gap: 12px; padding: 10px 0; border-top: 1px dashed var(--line); }
+.timeline li:first-child { border-top: 0; }
+.timeline .min { font-variant-numeric: tabular-nums; font-weight: 700; color: var(--sky); font-size: 15px; }
+.box { border: 1px solid var(--line); border-radius: var(--r); padding: 14px 16px; display: flex; flex-direction: column; gap: 8px; background: var(--card); }
+.box h4 { font-size: 15px; text-transform: uppercase; letter-spacing: .06em; color: var(--ink-soft); font-family: var(--font-body); font-weight: 700; }
+.box ul { margin: 0; padding-left: 20px; display: flex; flex-direction: column; gap: 4px; font-size: 15px; }
+.box.parent { background: var(--sky-soft); border-color: transparent; }
+.box.bean { background: var(--leaf-soft); border-color: transparent; }
+.decide { display: flex; gap: 10px; flex-wrap: wrap; align-items: center; padding-top: 4px; }
+.kid-empty { padding: 40px 20px; text-align: center; display: flex; flex-direction: column; gap: 8px; align-items: center; }
+
+/* Child-facing lesson (the bright moment) */
+.short { background: var(--sc-sky); border-radius: var(--r); overflow: hidden; display: flex; flex-direction: column; }
+.short svg { display: block; width: 100%; height: auto; }
+.short-bar { background: var(--card); display: flex; align-items: center; gap: 12px; padding: 10px 12px; flex-wrap: wrap; }
+.caption { font-size: 18px; font-weight: 700; line-height: 1.4; flex: 1 1 220px; min-height: 2.8em; letter-spacing: .01em; }
+.dots { display: flex; gap: 6px; }
+.dots button { width: 12px; height: 12px; border-radius: 50%; border: 2px solid var(--sky); background: transparent; padding: 0; cursor: pointer; }
+.dots button[aria-current="true"] { background: var(--sky); }
+.play { width: 44px; height: 44px; padding: 0; justify-content: center; flex: none; }
+/* Scene states */
+.s-el { transition: opacity .8s ease, transform 1.2s ease; }
+@media (prefers-reduced-motion: reduce) { .s-el { transition: none; } }
+#scene .dino, #scene .river, #scene .plant { opacity: 0; }
+#scene[data-s="1"] .dino, #scene[data-s="1"] .river, #scene[data-s="1"] .plant { opacity: 1; }
+#scene .bones { opacity: 0; }
+#scene[data-s="2"] .bones, #scene[data-s="3"] .bones, #scene[data-s="4"] .bones { opacity: 1; }
+#scene .mud { opacity: 0; }
+#scene[data-s="2"] .mud, #scene[data-s="3"] .mud { opacity: 1; }
+#scene .layers { opacity: 0; transform: translateY(-40px); }
+#scene[data-s="3"] .layers { opacity: 1; transform: none; }
+#scene .sparkle { opacity: 0; }
+#scene[data-s="3"] .sparkle { opacity: 1; }
+#scene .bones .bone { fill: var(--sc-bone); }
+#scene[data-s="3"] .bones .bone, #scene[data-s="4"] .bones .bone { fill: #8f8a80; }
+#scene .finder, #scene .wind { opacity: 0; }
+#scene[data-s="4"] .finder, #scene[data-s="4"] .wind { opacity: 1; }
+
+/* Formats strip */
+.formats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin-top: 28px; }
+.fmt { border: 1px solid var(--line); border-radius: var(--r); padding: 16px; display: flex; flex-direction: column; gap: 6px; background: var(--card); }
+.fmt .tag { font-size: 13px; font-weight: 700; color: var(--sky); }
+.fmt .soon { color: var(--ink-soft); }
+@media (max-width: 760px) { .formats { grid-template-columns: 1fr; } }
+
+/* Privacy */
+.priv { display: grid; grid-template-columns: repeat(2, 1fr); gap: 28px 40px; }
+.priv > div { display: flex; flex-direction: column; gap: 6px; }
+.priv h3 { font-size: 19px; }
+@media (max-width: 640px) { .priv { grid-template-columns: 1fr; } }
+.pledge-row { display: grid; grid-template-columns: 1.5fr 1fr; gap: 20px; margin-top: 36px; }
+@media (max-width: 760px) { .pledge-row { grid-template-columns: 1fr; } }
+.pledge { background: var(--sky-soft); border-radius: 20px; padding: 22px 24px; display: flex; flex-direction: column; gap: 10px; }
+.pledge ul { margin: 0; padding-left: 20px; display: flex; flex-direction: column; gap: 4px; }
+.seal { border: 2px dashed var(--line); border-radius: 20px; padding: 22px; display: flex; flex-direction: column; gap: 8px; align-items: flex-start; justify-content: center; }
+.seal .ring { width: 64px; height: 64px; border-radius: 50%; border: 3px dashed var(--ink-soft); display: grid; place-items: center; font-family: var(--font-display); font-weight: 800; font-size: 13px; color: var(--ink-soft); }
+
+/* Investor section */
+.inv { background: var(--card); }
+.tiles { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; }
+.tile { border-top: 4px solid var(--sky); padding-top: 12px; display: flex; flex-direction: column; gap: 4px; min-width: 0; }
+.tile .big { font-family: var(--font-display); font-weight: 800; font-size: 34px; line-height: 1.1; font-variant-numeric: tabular-nums; }
+.tile .lbl { font-size: 15px; color: var(--ink-soft); line-height: 1.4; }
+@media (max-width: 860px) { .tiles { grid-template-columns: repeat(2, 1fr); } }
+@media (max-width: 420px) { .tiles { grid-template-columns: 1fr; } }
+.inv-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; margin-top: 40px; }
+.inv-grid > * { min-width: 0; }
+@media (max-width: 860px) { .inv-grid { grid-template-columns: 1fr; } }
+.panel { border: 1px solid var(--line); border-radius: var(--r); padding: 20px; display: flex; flex-direction: column; gap: 12px; background: var(--paper); }
+.flag { font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: .06em; color: var(--berry); }
+.tbl-wrap { overflow-x: auto; }
+table { border-collapse: collapse; width: 100%; font-size: 15px; }
+th, td { text-align: left; padding: 8px 8px; border-bottom: 1px solid var(--line); vertical-align: top; }
+th { font-size: 13px; color: var(--ink-soft); font-weight: 700; }
+td.num { font-variant-numeric: tabular-nums; white-space: nowrap; }
+.path { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 12px; }
+.path li { display: grid; grid-template-columns: 34px 1fr; gap: 12px; align-items: start; }
+.path .n { width: 30px; height: 30px; border-radius: 50%; background: var(--sky); color: var(--card); font-weight: 700; display: grid; place-items: center; font-size: 15px; }
+.sources { font-size: 13px; color: var(--ink-soft); margin-top: 28px; display: flex; flex-direction: column; gap: 4px; }
+
+/* Behind the scenes */
+details.bts { border: 1px solid var(--line); border-radius: var(--r); background: var(--card); }
+details.bts summary { cursor: pointer; padding: 18px 20px; font-family: var(--font-display); font-weight: 600; font-size: 20px; list-style-position: inside; }
+.bts-body { padding: 0 20px 22px; display: flex; flex-direction: column; gap: 18px; }
+.agents { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; }
+.agent { border: 1px solid var(--line); border-radius: 12px; padding: 14px; display: flex; flex-direction: column; gap: 4px; min-width: 0; }
+.agent .nm { font-family: var(--font-display); font-weight: 800; color: var(--sky); }
+@media (max-width: 760px) { .agents { grid-template-columns: 1fr; } }
+
+footer { border-top: 1px solid var(--line); padding-block: 32px 48px; font-size: 14px; color: var(--ink-soft); }
+footer .wrap { display: flex; flex-direction: column; gap: 6px; }
+</style>
+
+
+</head>
+<body>
+<header class="top">
+  <div class="wrap">
+    <a class="brand" href="#top" aria-label="Just4Me Education home">
+      <svg width="30" height="30" viewBox="0 0 30 30" aria-hidden="true"><rect width="30" height="30" rx="9" fill="var(--sky)"/><path d="M8 16.5l4.5 4.5L22 10" fill="none" stroke="var(--sun)" stroke-width="3.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      Just4Me Education
+    </a>
+    <nav aria-label="Sections">
+      <a href="#how">How it works</a>
+      <a href="#week">Sample week</a>
+      <a href="#privacy">Privacy</a>
+      <a href="#investors">For investors</a>
+    </nav>
+    <span class="mock" title="Nothing on this page generates real content">Mock-up · sample data</span>
+  </div>
+</header>
+
+<main id="top">
+<section class="hero">
+  <div class="wrap hero-grid">
+    <div class="hero-copy">
+      <span class="eyebrow">For homeschooling families</span>
+      <h1>You choose what your child learns. We build it around them.</h1>
+      <p class="lede">Tell us your child's grade, reading level, attention span and interests. Just4Me Education drafts a week of lessons, checks every fact, and waits for you. Nothing reaches your child until you approve it.</p>
+      <div class="hero-actions">
+        <a class="btn btn-sun" href="#week">See a sample week</a>
+        <a class="btn btn-ghost" href="#how">How it works</a>
+      </div>
+      <ul class="trust">
+        <li>You approve every lesson</li>
+        <li>Facts checked with sources</li>
+        <li>Nicknames only</li>
+      </ul>
+    </div>
+
+    <div class="approve-card" aria-live="polite">
+      <div class="ac-top">
+        <span class="small muted">Waiting for your review · Tuesday</span>
+        <span class="pill pill-wait" id="heroPill">Needs you</span>
+      </div>
+      <h3>How a fossil forms</h3>
+      <p class="small muted">90-second animated short for Bean · grade 3 science · read at a 2nd-grade level</p>
+      <ul class="checks">
+        <li>Facts checked against 3 sources</li>
+        <li>Right for an 8-year-old</li>
+        <li>Matches Bean's reading level and 15-minute blocks</li>
+      </ul>
+      <div class="fix">
+        <strong>1 change made before you saw it</strong>
+        <span><s>"Almost every dinosaur became a fossil."</s></span>
+        <span>"Only a tiny share of living things ever become fossils." Source: Smithsonian National Museum of Natural History.</span>
+      </div>
+      <div class="ac-actions" id="heroActions">
+        <button class="btn btn-sun" id="heroApprove" type="button">Approve for Bean</button>
+        <button class="btn btn-ghost" id="heroChange" type="button">Ask for changes</button>
+      </div>
+      <p class="ac-done" id="heroDone" hidden></p>
+    </div>
+  </div>
+</section>
+
+<section id="how">
+  <div class="wrap">
+    <div class="sec-head">
+      <span class="eyebrow">How it works</span>
+      <h2>Four steps, and you hold the key one</h2>
+      <p class="lede">The work is done for you. The decisions stay with you.</p>
+    </div>
+    <ol class="steps">
+      <li><h3>Add your child</h3><p class="muted">A nickname, grade, reading level, attention span, interests and any learning needs. No real names, photos or birthdays.</p></li>
+      <li><h3>Get a week's plan</h3><p class="muted">Daily lessons matched to your state's standards, with timings, materials and notes for you.</p></li>
+      <li class="you"><h3>Review and approve</h3><p class="muted">See what was checked and what was changed. Approve, edit, or ask for a new version.</p></li>
+      <li><h3>Your child learns</h3><p class="muted">Your child sees only the lessons you approved, as animated shorts, read-alouds or comics.</p></li>
+    </ol>
+  </div>
+</section>
+
+<section id="week">
+  <div class="wrap">
+    <div class="sec-head">
+      <span class="eyebrow">Sample classroom · Rivera family · New Jersey standards</span>
+      <h2>One week of fossils, built for Bean</h2>
+      <p class="lede">Click a day to open its full plan. Approve days to see what Bean would see. Switch to Bean's view to check.</p>
+    </div>
+
+    <div class="classroom">
+      <div class="cr-bar">
+        <div class="child">
+          <div class="avatar" aria-hidden="true">B</div>
+          <div>
+            <strong>Bean</strong> <span class="muted small">· grade 3</span>
+            <ul class="chips" aria-label="Bean's profile">
+              <li>Reads at grade 2 level</li>
+              <li>15-minute blocks</li>
+              <li>Loves dinosaurs</li>
+              <li>Dyslexia-friendly text</li>
+            </ul>
+          </div>
+        </div>
+        <div class="viewtog" role="group" aria-label="Choose view">
+          <button type="button" id="vParent" aria-pressed="true">Your view</button>
+          <button type="button" id="vKid" aria-pressed="false">Bean's view</button>
+        </div>
+      </div>
+      <div class="week" role="tablist" aria-label="Days of the week" id="weekTabs"></div>
+      <div id="planPanel" role="tabpanel"></div>
+    </div>
+
+    <div class="formats">
+      <div class="fmt"><span class="tag">Animated shorts · at launch</span><h4>60 to 120 seconds, captioned</h4><p class="small muted">Narrated at your child's reading level, built from our own character and scene library.</p></div>
+      <div class="fmt"><span class="tag soon">Podcasts · next</span><h4>Two friendly hosts</h4><p class="small muted">Episode length follows your child's attention span.</p></div>
+      <div class="fmt"><span class="tag soon">Web comics · next</span><h4>Stories starring their interests</h4><p class="small muted">A dinosaur fan follows a dino detective reading clues in fossils.</p></div>
+    </div>
+  </div>
+</section>
+
+<section id="privacy">
+  <div class="wrap">
+    <div class="sec-head">
+      <span class="eyebrow">Safety and privacy</span>
+      <h2>Your child's information stays in your family</h2>
+    </div>
+    <div class="priv">
+      <div><h3>Nicknames only</h3><p class="muted">We never ask for a child's real name, photo, birthday or address.</p></div>
+      <div><h3>Encrypted, field by field</h3><p class="muted">Learning needs are encrypted separately, with a key for your family alone.</p></div>
+      <div><h3>Never used to train AI</h3><p class="muted">Your child's profile and work are not used to train any AI model.</p></div>
+      <div><h3>Yours to take or delete</h3><p class="muted">Export everything, or permanently delete a child's data, at any time.</p></div>
+    </div>
+    <div class="pledge-row">
+      <div class="pledge">
+        <h3>Our "No tricks" pledge</h3>
+        <ul>
+          <li>No ads, and no selling or sharing your data.</li>
+          <li>No streaks, badges or timers that pressure your child to keep going.</li>
+          <li>No surprise charges. We remind you before any renewal.</li>
+          <li>Cancel in two clicks, from the same page you signed up on.</li>
+        </ul>
+      </div>
+      <div class="seal">
+        <div class="ring" aria-hidden="true">COPPA</div>
+        <strong>Children's privacy seal</strong>
+        <span class="small muted">Placeholder. We plan to apply to an FTC-approved COPPA Safe Harbor program before launch. Not yet certified.</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="investors" class="inv">
+  <div class="wrap">
+    <div class="sec-head">
+      <span class="eyebrow">For investors</span>
+      <h2>A growing market, with public money ready to spend</h2>
+      <p class="lede">Homeschooling has doubled since 1999, and new state education savings accounts (ESAs) now give families money to spend on curriculum like ours.</p>
+    </div>
+    <div class="tiles">
+      <div class="tile"><span class="big">1.8M</span><span class="lbl">homeschooled children in the U.S., 3.4% of K–12 students (2022–23)</span></div>
+      <div class="tile"><span class="big">2×</span><span class="lbl">the homeschooling rate of 1999 (1.7%)</span></div>
+      <div class="tile"><span class="big">18–19</span><span class="lbl">states with universal or near-universal ESA or similar programs</span></div>
+      <div class="tile"><span class="big">$2,000</span><span class="lbl">Texas ESA award per homeschooled student, for about 96,000–102,000 awarded students in 2026–27</span></div>
+    </div>
+
+    <div class="inv-grid">
+      <div class="panel">
+        <span class="flag">Proposed, not final</span>
+        <h3>Pricing</h3>
+        <div class="tbl-wrap"><table>
+          <thead><tr><th>Plan</th><th>Monthly</th><th>Yearly</th><th>Includes</th></tr></thead>
+          <tbody>
+            <tr><td>Family</td><td class="num">$19</td><td class="num">$179</td><td>2 adults, 4 children</td></tr>
+            <tr><td>Family Plus</td><td class="num">$34</td><td class="num">$319</td><td>More children and media</td></tr>
+            <tr><td>Co-op</td><td class="num" colspan="2">from $8 per student</td><td>Groups and co-ops</td></tr>
+          </tbody>
+        </table></div>
+        <p class="small muted">A $2,000 Texas homeschool award covers the yearly Family plan about 11 times over.</p>
+      </div>
+
+      <div class="panel">
+        <span class="flag">Estimates</span>
+        <h3>Cost to make each lesson</h3>
+        <div class="tbl-wrap"><table>
+          <thead><tr><th>Item</th><th>AI and media cost</th></tr></thead>
+          <tbody>
+            <tr><td>A week's lesson plan</td><td class="num">about $0.06</td></tr>
+            <tr><td>Animated short</td><td class="num">about $0.25</td></tr>
+            <tr><td>Podcast or comic</td><td class="num">about $0.47</td></tr>
+          </tbody>
+        </table></div>
+        <p class="small muted">Low per-lesson cost leaves room for sibling pricing, which matters because about half of homeschooled children live in homes with three or more children.</p>
+      </div>
+
+      <div class="panel">
+        <span class="flag">Recommended plan</span>
+        <h3>Launch path</h3>
+        <ol class="path">
+          <li><span class="n">1</span><div><strong>Texas first.</strong> <span class="muted">Largest new ESA program. Apply as a vendor through its marketplace (Odyssey).</span></div></li>
+          <li><span class="n">2</span><div><strong>Then Florida and Arizona.</strong> <span class="muted">Established programs, with their own vendor processes (Step Up For Students, ClassWallet).</span></div></li>
+          <li><span class="n">3</span><div><strong>Everywhere else, paid by families.</strong> <span class="muted">Many states, including New Jersey and Maryland, have no homeschool ESA.</span></div></li>
+        </ol>
+      </div>
+
+      <div class="panel">
+        <span class="flag">Illustration</span>
+        <h3>What 1% of Texas looks like</h3>
+        <p>Reaching 1% of Texas ESA students on the yearly Family plan is about <strong>1,000 students</strong> and roughly <strong>$179,000 a year</strong>, from one state.</p>
+        <p class="small muted">Who buys: most often a two-parent, one-earner family. The top reason families homeschool is the school environment (83%), ahead of religious instruction (53%), so we keep our message about fit and control, and stay politically neutral.</p>
+      </div>
+    </div>
+
+    <div class="sources">
+      <span>Sources: NCES, <em>Parent and Family Involvement in Education: 2023</em> and Digest Table 206.10; EdChoice; Texas Education Freedom Accounts program materials (2026). Pricing, costs and the launch plan are company proposals and estimates from internal reports, not commitments.</span>
+    </div>
+  </div>
+</section>
+
+<section id="behind">
+  <div class="wrap">
+    <details class="bts">
+      <summary>Behind the scenes: how each lesson is made</summary>
+      <div class="bts-body">
+        <p class="muted">Parents see plain check names. Inside, six AI specialists plan, write and check each other's work. If they can't agree, the question goes to the parent.</p>
+        <div class="agents">
+          <div class="agent"><span class="nm">LPBot</span><span>Plans the week around grade, pacing and interests.</span></div>
+          <div class="agent"><span class="nm">CompBot</span><span>Matches each lesson to the family's state standards.</span></div>
+          <div class="agent"><span class="nm">TeachBot</span><span>Writes the lesson, short, read-aloud or comic.</span></div>
+          <div class="agent"><span class="nm">FactBot</span><span>Checks every claim and cites a source for each fix.</span></div>
+          <div class="agent"><span class="nm">SafeBot</span><span>Screens for age-appropriateness and safety.</span></div>
+          <div class="agent"><span class="nm">PrincBot</span><span>Signs off: safety first, then accuracy. Unresolved items go to the parent.</span></div>
+        </div>
+      </div>
+    </details>
+  </div>
+</section>
+</main>
+
+<footer>
+  <div class="wrap">
+    <strong>Mock-up for investor review.</strong>
+    <span>The Rivera family, Bean and all lessons and results are sample data. Nothing on this page creates real lessons or stores information.</span>
+    <span>© 2026 Just4Me Education</span>
+  </div>
+</footer>
+
+<template id="shortTpl">
+  <div class="short">
+    <svg id="scene" data-s="1" viewBox="0 0 480 270" role="img" aria-label="Animated short: how a fossil forms">
+      <rect width="480" height="270" fill="var(--sc-sky)"/>
+      <circle cx="420" cy="48" r="22" fill="var(--sun)"/>
+      <rect y="190" width="480" height="80" fill="var(--sc-ground)"/>
+      <g class="s-el river"><path d="M0 205 Q120 195 240 208 T480 202 L480 222 Q360 230 240 220 T0 224 Z" fill="var(--sc-river)"/></g>
+      <g class="s-el plant">
+        <rect x="58" y="140" width="8" height="52" fill="#6b4f2a"/><circle cx="62" cy="132" r="22" fill="var(--sc-dino)"/>
+        <rect x="392" y="150" width="7" height="42" fill="#6b4f2a"/><circle cx="395" cy="142" r="18" fill="var(--sc-dino)"/>
+      </g>
+      <g class="s-el dino">
+        <ellipse cx="240" cy="160" rx="62" ry="30" fill="var(--sc-dino)"/>
+        <path d="M285 150 Q310 110 318 80 L334 84 Q326 120 300 165 Z" fill="var(--sc-dino)"/>
+        <ellipse cx="334" cy="78" rx="16" ry="10" fill="var(--sc-dino)"/>
+        <circle cx="340" cy="75" r="2.5" fill="#1c2b3a"/>
+        <path d="M182 160 Q140 170 110 188 L114 192 Q150 182 190 172 Z" fill="var(--sc-dino)"/>
+        <rect x="205" y="180" width="14" height="22" rx="4" fill="var(--sc-dino)"/>
+        <rect x="262" y="180" width="14" height="22" rx="4" fill="var(--sc-dino)"/>
+      </g>
+      <g class="s-el mud"><path d="M120 214 Q240 196 360 214 L360 230 L120 230 Z" fill="var(--sc-l1)"/></g>
+      <g class="s-el bones">
+        <g class="bone">
+          <rect x="180" y="210" width="110" height="6" rx="3"/>
+          <rect x="290" y="198" width="40" height="5" rx="2.5" transform="rotate(-20 290 200)"/>
+          <ellipse cx="334" cy="192" rx="10" ry="6"/>
+          <rect x="140" y="214" width="42" height="4" rx="2"/>
+          <rect x="196" y="203" width="4" height="12" rx="2"/><rect x="212" y="203" width="4" height="12" rx="2"/><rect x="228" y="203" width="4" height="12" rx="2"/><rect x="244" y="203" width="4" height="12" rx="2"/><rect x="260" y="203" width="4" height="12" rx="2"/>
+        </g>
+      </g>
+      <g class="s-el layers">
+        <rect y="150" width="480" height="20" fill="var(--sc-l1)"/>
+        <rect y="170" width="480" height="22" fill="var(--sc-l2)"/>
+        <rect y="122" width="480" height="28" fill="var(--sc-l3)"/>
+        <path d="M0 122 L480 122" stroke="#00000022"/>
+      </g>
+      <g class="s-el sparkle" fill="var(--sun)">
+        <circle cx="200" cy="212" r="3"/><circle cx="246" cy="209" r="2.5"/><circle cx="282" cy="213" r="3"/><circle cx="320" cy="196" r="2.5"/><circle cx="160" cy="215" r="2.5"/>
+      </g>
+      <g class="s-el wind" stroke="var(--card)" stroke-width="4" stroke-linecap="round" fill="none">
+        <path d="M30 70 Q70 60 110 70"/><path d="M50 95 Q100 85 140 95"/>
+      </g>
+      <g class="s-el finder">
+        <circle cx="388" cy="132" r="12" fill="#e8b98f"/>
+        <path d="M376 128 Q388 112 400 128 Z" fill="var(--sun)"/>
+        <rect x="378" y="144" width="20" height="36" rx="6" fill="var(--sky)"/>
+        <rect x="380" y="180" width="6" height="14" fill="#1c2b3a"/><rect x="390" y="180" width="6" height="14" fill="#1c2b3a"/>
+        <path d="M378 152 L350 186" stroke="#e8b98f" stroke-width="5" stroke-linecap="round"/>
+        <rect x="340" y="184" width="14" height="8" rx="2" fill="var(--berry)"/>
+      </g>
+    </svg>
+    <div class="short-bar">
+      <button class="btn btn-sun play" type="button" id="playBtn" aria-label="Play">▶</button>
+      <p class="caption" id="caption"></p>
+      <div class="dots" id="dots"></div>
+    </div>
+  </div>
+</template>
+
+<script>
+(function () {
+  // ---------- Hero approval ----------
+  const heroApprove = document.getElementById("heroApprove");
+  const heroChange = document.getElementById("heroChange");
+  const heroDone = document.getElementById("heroDone");
+  const heroPill = document.getElementById("heroPill");
+  const heroActions = document.getElementById("heroActions");
+
+  // ---------- Week data (sample) ----------
+  const STD = { code: "NJSLS-S 3-LS4-1", text: "Analyze and interpret data from fossils to provide evidence of the organisms and the environments in which they lived long ago." };
+  const days = [
+    { key: "mon", dn: "Mon", title: "What is a fossil?", fmt: "Read-aloud + sorting game", approved: true,
+      goal: "Bean can tell a body fossil (bones, shells, teeth) from a trace fossil (footprints, burrows) and give one example of each.",
+      steps: [["0–5", "Warm-up: show a chicken bone and a muddy boot print. Ask: which one could tell a scientist what an animal looked like?"], ["5–15", "Read-aloud: \"Clues in the Rock\" (2nd-grade level, large dyslexia-friendly text). Pause after each page."], ["Break", "Movement break: walk like a dinosaur for 2 minutes."], ["15–25", "Sorting game: 8 picture cards into Body fossil or Trace fossil."], ["25–30", "Bean draws one fossil and labels it."]],
+      parent: ["Read the story aloud first; let Bean follow with a finger.", "Print the 8 sorting cards (1 page), or use the on-screen version."],
+      adjust: ["Two 15-minute blocks with a movement break.", "Picture cards carry one word each, no sentences."],
+      check: "Hand Bean a picture of a dinosaur footprint. Ask: is this a body fossil or a trace fossil? (Trace fossil.)",
+      refs: ["Smithsonian National Museum of Natural History: fossil basics", "U.S. Geological Survey (USGS): Fossils, Rocks, and Time"] },
+    { key: "tue", dn: "Tue", title: "How a fossil forms", fmt: "Animated short · 90 sec", approved: false, short: true,
+      goal: "Bean can put the four steps of fossil formation in order: buried quickly, layers pile up, minerals fill the bones, rock wears away.",
+      steps: [["0–3", "Ask: if a dinosaur died today, what would happen to its body?"], ["3–6", "Watch the animated short, then watch it again with captions read together."], ["6–15", "Bean puts four picture cards in order and tells the story in their own words."], ["Break", "Stretch break."], ["15–25", "Layer cake: press four colors of play dough in layers over a toy dinosaur. Talk about which layer is oldest."]],
+      parent: ["The short says \"a very long time\" instead of numbers. If Bean asks, most dinosaur fossils are more than 66 million years old.", "Play dough or clay in 4 colors and a small toy animal."],
+      adjust: ["Captions on, large font, read at a 2nd-grade level.", "Short stays under 2 minutes to fit a 15-minute block."],
+      check: "Ask: why do the bones need to be covered quickly? (So they are not eaten or washed away before they can be buried.)",
+      refs: ["Smithsonian National Museum of Natural History: how fossils form", "Natural History Museum, London: how are fossils formed?", "U.S. Geological Survey (USGS): Fossils, Rocks, and Time"] },
+    { key: "wed", dn: "Wed", title: "Fossil clues", fmt: "Picture investigation", approved: false,
+      goal: "Bean can use a fossil to say something about where an animal lived, such as a fish fossil showing a place was once under water.",
+      steps: [["0–5", "Show a fish fossil found on a mountain. Ask: how could a fish get up there?"], ["5–15", "Detective cards: 4 fossils, each with a clue about its home (water, forest, desert, ice)."], ["Break", "Movement break."], ["15–25", "Bean picks one fossil and finishes: \"This place was once ___ because ___.\""]],
+      parent: ["It's fine if Bean guesses. Ask which clue Bean used.", "The fish-on-a-mountain idea: land can rise over a very long time, so old sea floors can end up high and dry."],
+      adjust: ["Sentence starters are read aloud, not written.", "Bean can answer by drawing instead of writing."],
+      check: "Show a fossil seashell found in a desert. Ask: what does this tell us? (The desert was once covered by water.)",
+      refs: ["U.S. Geological Survey (USGS): Fossils, Rocks, and Time", "Smithsonian National Museum of Natural History: fossil basics"] },
+    { key: "thu", dn: "Thu", title: "Make a trace fossil", fmt: "Hands-on activity", approved: false,
+      goal: "Bean can make a trace fossil and explain how a scientist would study it.",
+      steps: [["0–5", "Review: body fossils vs trace fossils."], ["5–15", "Press a toy dinosaur's feet, a leaf and a shell into salt dough. Let it dry."], ["Break", "Snack break while the dough sets."], ["15–25", "Swap: the parent guesses what made each print, and Bean explains the clue."]],
+      parent: ["Salt dough: 1 cup flour, ½ cup salt, about ½ cup water.", "Keep the prints. Friday's review uses them."],
+      adjust: ["All hands-on, almost no reading.", "Bean leads the guessing game to build confidence."],
+      check: "Ask: what can a footprint tell us that a bone can't? (How the animal walked or moved.)",
+      refs: ["Natural History Museum, London: trace fossils", "Smithsonian National Museum of Natural History: fossil basics"] },
+    { key: "fri", dn: "Fri", title: "Dina the Dino Detective", fmt: "Web comic + review", approved: false,
+      goal: "Bean can retell how one fossil formed and what clue it gives about the past.",
+      steps: [["0–10", "Read the 6-panel comic together. Bean reads the speech bubbles they can."], ["10–15", "Bean finds two fossil clues in the comic."], ["Break", "Movement break."], ["15–25", "Show and tell: Bean presents Thursday's salt-dough fossils as a museum guide."]],
+      parent: ["Record the show and tell as this week's work sample, if you like.", "Use the checklist below to note which goals Bean met."],
+      adjust: ["Comic text is short and in large type.", "Speaking, not writing, for the final check."],
+      check: "Bean explains one fossil: what kind it is, how it formed, and one clue it gives.",
+      refs: ["Smithsonian National Museum of Natural History: fossil basics", "U.S. Geological Survey (USGS): Fossils, Rocks, and Time"] }
+  ];
+
+  let sel = 1;           // open Tuesday by default
+  let view = "parent";
+  const tabsEl = document.getElementById("weekTabs");
+  const panel = document.getElementById("planPanel");
+
+  function esc(s) { return String(s).replace(/[&<>"]/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c])); }
+
+  function renderTabs() {
+    tabsEl.innerHTML = "";
+    days.forEach((d, i) => {
+      const b = document.createElement("button");
+      b.type = "button"; b.className = "day-tab"; b.setAttribute("role", "tab");
+      b.setAttribute("aria-selected", i === sel ? "true" : "false");
+      b.id = "tab-" + d.key;
+      const locked = view === "kid" && !d.approved;
+      if (locked) b.classList.add("locked");
+      const pill = view === "kid"
+        ? (d.approved ? '<span class="pill pill-ok">Ready</span>' : '<span class="pill pill-wait">Not yet</span>')
+        : (d.approved ? '<span class="pill pill-ok">Approved</span>' : '<span class="pill pill-wait">Needs you</span>');
+      b.innerHTML = `<span class="dn">${d.dn}</span><span class="dt">${esc(d.title)}</span>${pill}`;
+      b.addEventListener("click", () => { sel = i; render(); });
+      tabsEl.appendChild(b);
+    });
+  }
+
+  function renderPlan() {
+    const d = days[sel];
+    panel.setAttribute("aria-labelledby", "tab-" + d.key);
+    stopShort();
+    if (view === "kid") {
+      if (!d.approved) {
+        panel.innerHTML = `<div class="kid-empty"><h3>Coming soon!</h3><p class="muted">Bean can't see "${esc(d.title)}" yet. It appears here after a parent approves it.</p></div>`;
+        return;
+      }
+      panel.innerHTML = `<div class="plan" style="grid-template-columns:1fr"><div class="plan-main">
+        <span class="eyebrow">${d.dn} · ${esc(d.fmt)}</span><h3 style="font-size:28px">${esc(d.title)}</h3>
+        ${d.short ? '<div id="shortSlot"></div>' : `<p class="lede">Hi Bean! Today you'll be a fossil scientist. Ask your grown-up to start.</p>`}
+      </div></div>`;
+      if (d.short) mountShort();
+      return;
+    }
+    panel.innerHTML = `<div class="plan">
+      <div class="plan-main">
+        <div><span class="eyebrow">${d.dn} · ${esc(d.fmt)} · about 30 minutes</span><h3 style="font-size:26px;margin-top:6px">${esc(d.title)}</h3></div>
+        <div class="std"><b>${STD.code}</b> · ${esc(STD.text)}</div>
+        <p><strong>Goal:</strong> ${esc(d.goal)}</p>
+        ${d.short ? '<div id="shortSlot"></div>' : ""}
+        <div><h4 style="margin-bottom:6px">Step by step (minutes)</h4>
+          <ol class="timeline">${d.steps.map(s => `<li><span class="min">${esc(s[0])}</span><span>${esc(s[1])}</span></li>`).join("")}</ol>
+        </div>
+      </div>
+      <div class="plan-side">
+        <div class="box parent"><h4>Notes for you</h4><ul>${d.parent.map(x => `<li>${esc(x)}</li>`).join("")}</ul></div>
+        <div class="box bean"><h4>Adjusted for Bean</h4><ul>${d.adjust.map(x => `<li>${esc(x)}</li>`).join("")}</ul></div>
+        <div class="box"><h4>Check for understanding</h4><p class="small">${esc(d.check)}</p></div>
+        <div class="box"><h4>Checked against</h4><ul>${d.refs.map(x => `<li>${esc(x)}</li>`).join("")}</ul></div>
+        <div class="decide" aria-live="polite">${d.approved
+          ? `<span class="pill pill-ok">Approved. Bean can see this.</span><button class="btn btn-ghost" type="button" id="unapprove">Take back</button>`
+          : `<button class="btn btn-sun" type="button" id="approve">Approve for Bean</button><button class="btn btn-ghost" type="button" id="changes">Ask for changes</button>`}
+        </div>
+        <p class="small muted" id="changeNote" hidden>In the real product you'd say what to change, and a new version would come back for review. This mock-up doesn't generate content.</p>
+      </div>
+    </div>`;
+    if (d.short) mountShort();
+    const a = document.getElementById("approve"), u = document.getElementById("unapprove"), c = document.getElementById("changes");
+    if (a) a.addEventListener("click", () => setApproved(sel, true));
+    if (u) u.addEventListener("click", () => setApproved(sel, false));
+    if (c) c.addEventListener("click", () => { document.getElementById("changeNote").hidden = false; });
+  }
+
+  function setApproved(i, v) {
+    days[i].approved = v;
+    if (i === 1) syncHero();
+    render();
+  }
+
+  function syncHero() {
+    const ok = days[1].approved;
+    heroActions.hidden = ok;
+    heroDone.hidden = !ok;
+    heroDone.textContent = ok ? "Approved. Bean will see this on Tuesday." : "";
+    heroPill.textContent = ok ? "Approved" : "Needs you";
+    heroPill.className = "pill " + (ok ? "pill-ok" : "pill-wait");
+  }
+  heroApprove.addEventListener("click", () => setApproved(1, true));
+  heroChange.addEventListener("click", () => { sel = 1; view = "parent"; render(); document.getElementById("week").scrollIntoView(); });
+
+  function render() {
+    document.getElementById("vParent").setAttribute("aria-pressed", view === "parent");
+    document.getElementById("vKid").setAttribute("aria-pressed", view === "kid");
+    renderTabs(); renderPlan();
+  }
+  document.getElementById("vParent").addEventListener("click", () => { view = "parent"; render(); });
+  document.getElementById("vKid").addEventListener("click", () => { view = "kid"; render(); });
+
+  // ---------- Animated short ----------
+  const captions = [
+    "Long ago, a dinosaur lived by a river.",
+    "It died. Its soft parts rotted away. Mud and sand covered its bones fast.",
+    "Over a very long time, more layers piled on top. The mud turned to rock. Minerals filled the bones.",
+    "Wind and water wore the rock away. Now people can find the fossil!"
+  ];
+  let scene = 1, timer = null;
+  function mountShort() {
+    const slot = document.getElementById("shortSlot");
+    slot.appendChild(document.getElementById("shortTpl").content.cloneNode(true));
+    const dots = document.getElementById("dots");
+    captions.forEach((_, i) => {
+      const b = document.createElement("button"); b.type = "button";
+      b.setAttribute("aria-label", "Scene " + (i + 1));
+      b.addEventListener("click", () => { pause(); go(i + 1); });
+      dots.appendChild(b);
+    });
+    document.getElementById("playBtn").addEventListener("click", () => timer ? pause() : play());
+    go(1);
+  }
+  function go(n) {
+    scene = n;
+    const svg = document.getElementById("scene"); if (!svg) return;
+    svg.setAttribute("data-s", n);
+    document.getElementById("caption").textContent = captions[n - 1];
+    document.querySelectorAll("#dots button").forEach((b, i) => b.setAttribute("aria-current", i === n - 1 ? "true" : "false"));
+  }
+  function play() {
+    if (scene === 4) go(1);
+    const btn = document.getElementById("playBtn"); btn.textContent = "❚❚"; btn.setAttribute("aria-label", "Pause");
+    timer = setInterval(() => { if (scene >= 4) { pause(); return; } go(scene + 1); }, 4000);
+  }
+  function pause() {
+    clearInterval(timer); timer = null;
+    const btn = document.getElementById("playBtn"); if (btn) { btn.textContent = "▶"; btn.setAttribute("aria-label", "Play"); }
+  }
+  function stopShort() { clearInterval(timer); timer = null; scene = 1; }
+
+  render(); syncHero();
+})();
+</script>
+
+</body>
+</html>
