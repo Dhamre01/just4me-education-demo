@@ -14,3 +14,6 @@ A new single-page investor demo lives in `investor/`: parent approval first, a s
 
 ## Viewing it
 Open `index.html` in any browser, or visit the GitHub Pages link for this repository.
+
+## Rock Hike Pocket Guide (November 2026)
+A phone-first field guide for a Cecil County, Maryland geology hike with tasks for grades 4, 7 and 8 lives in `rock-hike/`. It is one self-contained HTML file (pictures built in). On GitHub Pages it is at `/rock-hike/`. Photos are from the U.S. Geological Survey; drawings were made for the guide.
