@@ -17,3 +17,5 @@ Open `index.html` in any browser, or visit the GitHub Pages link for this reposi
 
 ## Rock Hike Pocket Guide (November 2026)
 A phone-first field guide for a Cecil County, Maryland geology hike with tasks for grades 4, 7 and 8 lives in `rock-hike/`. It is one self-contained HTML file (pictures built in). On GitHub Pages it is at `/rock-hike/`. Photos are from the U.S. Geological Survey; drawings were made for the guide.
+
+Multi-phone use (beta feedback, November 2026): on first open each phone picks who uses it (Parent, Grade 4, Grade 7 or Grade 8). Students type answers under their tasks; answers are saved only on that phone (localStorage). On the Answers tab a student taps Send to parent, which makes a link and QR code that carry his answers (compressed, in the URL fragment, so nothing is sent to a server). The parent's phone opens the link or pastes it, merges the newest version of each answer, and can print or share all answers for the portfolio. QR codes use qrcode-generator 1.4.4 by Kazuhiko Arase (MIT license), inlined.
