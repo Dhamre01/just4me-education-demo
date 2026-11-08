@@ -16,7 +16,7 @@ A new single-page investor demo lives in `investor/`: parent approval first, a s
 Open `index.html` in any browser, or visit the GitHub Pages link for this repository.
 
 ## Company domain
-The company's domain is **just4meed.com** (bought November 7, 2026). It is not connected to these pages yet: the demo is still served from GitHub Pages at https://dhamre01.github.io/just4me-education-demo/.
+The company's domain is **just4meed.com** (bought November 7, 2026). This demo is served from GitHub Pages at https://demo.just4meed.com/ (investor page: https://demo.just4meed.com/investor/).
 
 ## Rock Hike Pocket Guide (November 2026)
 A phone-first field guide for a Cecil County, Maryland geology hike with tasks for grades 4, 7 and 8 lives in `rock-hike/`. It is one self-contained HTML file (pictures built in). On GitHub Pages it is at `/rock-hike/`. Photos are from the U.S. Geological Survey; drawings were made for the guide.
