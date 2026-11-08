@@ -3,9 +3,9 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<meta name="description" content="Just4Me Education investor demo: lessons built around your child, approved by you. Mock-up with sample data only.">
+<meta name="description" content="Just4Me Education investor demo: lessons built around your child, with you in control. Mock-up with sample data only.">
 <meta property="og:title" content="Just4Me Education Investor Demo">
-<meta property="og:description" content="Lessons built around your child, approved by you. Mock-up with sample data only.">
+<meta property="og:description" content="Lessons built around your child, with you in control. Mock-up with sample data only.">
 <meta name="robots" content="noindex">
 <style>:root{color-scheme:light;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}img{max-width:100%}[hidden]{display:none!important}</style>
 <title>Just4Me Education Investor Demo</title>
@@ -285,13 +285,13 @@ footer .wrap { display: flex; flex-direction: column; gap: 6px; }
     <div class="hero-copy">
       <span class="eyebrow">For homeschooling families</span>
       <h1>You choose what your child learns. We build it around them.</h1>
-      <p class="lede">Tell us your child's grade, reading level, attention span and interests. Just4Me Education drafts a week of lessons, checks every fact, and waits for you. Nothing reaches your child until you approve it.</p>
+      <p class="lede">Tell us your child's grade, reading level, attention span and interests. Just4Me Education drafts a week of lessons, checks every fact, and puts you in control. Review is on by default, so you approve each lesson before your child sees it. Turn it off to let checked lessons go straight through.</p>
       <div class="hero-actions">
         <a class="btn btn-sun" href="#week">See a sample week</a>
         <a class="btn btn-ghost" href="#how">How it works</a>
       </div>
       <ul class="trust">
-        <li>You approve every lesson</li>
+        <li>Review is on by default; turn it off any time</li>
         <li>Facts checked with sources</li>
         <li>Nicknames only</li>
       </ul>
@@ -299,7 +299,7 @@ footer .wrap { display: flex; flex-direction: column; gap: 6px; }
 
     <div class="approve-card" aria-live="polite">
       <div class="ac-top">
-        <span class="small muted">Waiting for your review · Tuesday</span>
+        <span class="small muted">Review is on · Tuesday</span>
         <span class="pill pill-wait" id="heroPill">Needs you</span>
       </div>
       <h3>How a fossil forms</h3>
@@ -327,14 +327,14 @@ footer .wrap { display: flex; flex-direction: column; gap: 6px; }
   <div class="wrap">
     <div class="sec-head">
       <span class="eyebrow">How it works</span>
-      <h2>Four steps, and you hold the key one</h2>
+      <h2>Four steps, and you stay in control</h2>
       <p class="lede">The work is done for you. The decisions stay with you.</p>
     </div>
     <ol class="steps">
       <li><h3>Add your child</h3><p class="muted">A nickname, grade, reading level, attention span, interests and any learning needs. No real names, photos or birthdays.</p></li>
       <li><h3>Get a week's plan</h3><p class="muted">Daily lessons matched to your state's standards, with timings, materials and notes for you.</p></li>
-      <li class="you"><h3>Review and approve</h3><p class="muted">See what was checked and what was changed. Approve, edit, or ask for a new version.</p></li>
-      <li><h3>Your child learns</h3><p class="muted">Your child sees only the lessons you approved, as animated shorts, read-alouds or comics.</p></li>
+      <li class="you"><h3>Review (on by default)</h3><p class="muted">See what was checked and what was changed. Approve, edit, or ask for a new version before your child sees anything. Prefer not to? Turn review off and checked lessons go straight to your child.</p></li>
+      <li><h3>Your child learns</h3><p class="muted">Your child gets the week as animated shorts, read-alouds or comics. You can pause or change any lesson at any time.</p></li>
     </ol>
   </div>
 </section>
@@ -344,7 +344,7 @@ footer .wrap { display: flex; flex-direction: column; gap: 6px; }
     <div class="sec-head">
       <span class="eyebrow">Sample classroom · Rivera family · New Jersey standards</span>
       <h2>One week of fossils, built for Bean</h2>
-      <p class="lede">Click a day to open its full plan. Approve days to see what Bean would see. Switch to Bean's view to check.</p>
+      <p class="lede">Click a day to open its full plan. Review is on (the default), so approve days to see what Bean would see. Switch to Bean's view to check.</p>
     </div>
 
     <div class="classroom">
@@ -643,7 +643,7 @@ footer .wrap { display: flex; flex-direction: column; gap: 6px; }
     stopShort();
     if (view === "kid") {
       if (!d.approved) {
-        panel.innerHTML = `<div class="kid-empty"><h3>Coming soon!</h3><p class="muted">Bean can't see "${esc(d.title)}" yet. It appears here after a parent approves it.</p></div>`;
+        panel.innerHTML = `<div class="kid-empty"><h3>Coming soon!</h3><p class="muted">Bean can't see "${esc(d.title)}" yet. This family has review turned on, so it appears after a parent approves it.</p></div>`;
         return;
       }
       panel.innerHTML = `<div class="plan" style="grid-template-columns:1fr"><div class="plan-main">
